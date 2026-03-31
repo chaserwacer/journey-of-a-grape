@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Journey of a Grape</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    /* ============================================================
+       CSS CUSTOM PROPERTIES
+    ============================================================ */
+    :root {
+      --burgundy:   #5B2333;
+      --amber:      #D4A843;
+      --sage:       #7A8B6F;
+      --cream:      #F5ECD7;
+      --charcoal:   #2D2D2D;
+      --grape:      #6B3FA0;
+      --grape-dark: #4A2970;
+      --grape-light:#9B6FD0;
+      --green-leaf: #3D6B3A;
+
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body:    'Source Serif 4', Georgia, serif;
+    }
+
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--burgundy);
+      color: var(--charcoal);
+      overflow-x: hidden;
+    }
+
+    /* Grain texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0.6;
+    }
+
+    /* ============================================================
+       OPENING SCENE
+    ============================================================ */
+    #opening-scene {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: linear-gradient(180deg, #1a0a12 0%, #3a1520 20%, var(--burgundy) 55%, #8B5A2B 80%, var(--amber) 100%);
+      animation: goldenShift 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes goldenShift {
+      0%   { filter: brightness(1)    saturate(1);   }
+      50%  { filter: brightness(1.08) saturate(1.1); }
+      100% { filter: brightness(0.95) saturate(0.95); }
+    }
+
+    /* Parallax hills in opening */
+    .opening-hills {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      pointer-events: none;
+    }
+    .opening-hills .hill-far {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 200px;
+    }
+    .opening-hills .hill-near {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 130px;
+    }
+
+    /* Stars */
+    .stars {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60%;
+      pointer-events: none;
+    }
+    .star {
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+      animation: twinkle var(--d, 3s) ease-in-out infinite;
+      opacity: var(--o, 0.6);
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: var(--o, 0.6); transform: scale(1); }
+      50%       { opacity: 0.2;          transform: scale(0.6); }
+    }
+
+    .opening-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .opening-eyebrow {
+      font-family: var(--font-body);
+      font-size: clamp(0.75rem, 1.5vw, 1rem);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 0.75rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.5s forwards;
+    }
+
+    .opening-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 7vw, 6rem);
+      font-weight: 700;
+      color: var(--cream);
+      line-height: 1.1;
+      text-shadow: 0 4px 30px rgba(0,0,0,0.5);
+      opacity: 0;
+      animation: fadeUp 0.9s 0.8s forwards;
+    }
+
+    .opening-title em {
+      font-style: italic;
+      color: var(--amber);
+    }
+
+    .opening-subtitle {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      color: rgba(245,236,215,0.85);
+      margin-top: 0.75rem;
+      opacity: 0;
+      animation: fadeUp 0.9s 1.1s forwards;
+    }
+
+    /* Opening grape character */
+    .opening-grape-wrap {
+      margin: 2rem auto 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.9s 1.4s forwards;
+    }
+
+    .begin-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-top: 2rem;
+      padding: 0.85rem 2.2rem;
+      background: var(--amber);
+      color: var(--charcoal);
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(212,168,67,0.4);
+      opacity: 0;
+      animation: fadeUp 0.9s 1.7s forwards;
+    }
+    .begin-btn:hover, .begin-btn:focus-visible {
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 8px 30px rgba(212,168,67,0.6);
+      outline: none;
+    }
+    .begin-btn:focus-visible {
+      outline: 3px solid var(--cream);
+      outline-offset: 3px;
+    }
+    .begin-btn .arrow { font-size: 1.2em; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+
+    /* ============================================================
+       VINEYARD WORLD  (horizontal scrolling container)
+    ============================================================ */
+    #vineyard-world {
+      position: relative;
+      /* On desktop: horizontal scroll; on mobile: vertical */
+      display: flex;
+      flex-direction: row;
+      height: 100vh;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      background: linear-gradient(180deg,
+        #1C0A14 0%,
+        #3D1A22 10%,
+        var(--burgundy) 30%,
+        #8B6040 65%,
+        #A07840 78%,
+        var(--sage) 88%,
+        #C8B870 95%,
+        var(--amber) 100%
+      );
+    }
+    #vineyard-world::-webkit-scrollbar { display: none; }
+    #vineyard-world { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Parallax sky gradient animation */
+    #vineyard-world::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg,
+        rgba(26,10,20,0.0) 0%,
+        rgba(212,168,67,0.08) 60%,
+        rgba(212,168,67,0.18) 100%
+      );
+      pointer-events: none;
+      z-index: 1;
+      animation: skyPulse 10s ease-in-out infinite alternate;
+    }
+    @keyframes skyPulse {
+      0%   { opacity: 0.6; }
+      100% { opacity: 1;   }
+    }
+
+    /* ============================================================
+       VINEYARD SECTIONS / PANELS
+    ============================================================ */
+    .vineyard-panel {
+      position: relative;
+      flex: 0 0 100vw;
+      width: 100vw;
+      height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Shared ground / path */
+    .ground-strip {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 38%;
+      background: linear-gradient(180deg, #8B6A3A 0%, #6B4E28 50%, #4A3418 100%);
+      z-index: 2;
+    }
+    .ground-strip::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 80px,
+        rgba(255,255,255,0.03) 80px,
+        rgba(255,255,255,0.03) 82px
+      );
+    }
+
+    /* Path running through the vineyard */
+    .path-strip {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 22%;
+      background: linear-gradient(180deg, #C4A06A 0%, #A07840 60%, #7A5A28 100%);
+      z-index: 3;
+      clip-path: polygon(0 30%, 100% 20%, 100% 100%, 0 100%);
+    }
+
+    /* Mid-ground vines row */
+    .vine-row {
+      position: absolute;
+      bottom: 38%;
+      left: 0;
+      width: 100%;
+      height: 120px;
+      z-index: 4;
+      display: flex;
+      align-items: flex-end;
+      gap: 60px;
+      padding: 0 40px;
+    }
+
+    /* Individual vine plant */
+    .vine-plant {
+      flex: 0 0 auto;
+      position: relative;
+    }
+
+    /* Distant hills */
+    .hills-layer {
+      position: absolute;
+      bottom: 35%;
+      left: 0;
+      width: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* ============================================================
+       STATION LANDMARK LAYOUT
+    ============================================================ */
+    .station-landmark {
+      position: absolute;
+      bottom: 30%;
+      z-index: 10;
+      cursor: pointer;
+      transform-origin: bottom center;
+      transition: transform 0.2s ease;
+    }
+    .station-landmark:hover { transform: scale(1.06) translateY(-6px); }
+    .station-landmark:focus-visible {
+      outline: 3px solid var(--amber);
+      outline-offset: 6px;
+      border-radius: 4px;
+    }
+
+    .station-label {
+      text-align: center;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.78rem;
+      color: var(--cream);
+      text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+      margin-top: 6px;
+      letter-spacing: 0.04em;
+      pointer-events: none;
+    }
+
+    /* Sparkle on hover */
+    .station-landmark::after {
+      content: '✦';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%) scale(0);
+      color: var(--amber);
+      font-size: 1.1rem;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .station-landmark:hover::after {
+      transform: translateX(-50%) scale(1);
+      opacity: 1;
+      animation: sparkleFloat 0.6s ease-out forwards;
+    }
+    @keyframes sparkleFloat {
+      0%   { transform: translateX(-50%) scale(0) translateY(0); opacity: 1; }
+      100% { transform: translateX(-50%) scale(1.4) translateY(-16px); opacity: 0; }
+    }
+
+    /* ============================================================
+       GRAPE CHARACTER
+    ============================================================ */
+    #grape-character {
+      position: fixed;
+      bottom: 22%;
+      left: 80px;
+      z-index: 20;
+      pointer-events: none;
+      transition: left 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+      will-change: left;
+    }
+
+    .grape-body-wrap {
+      animation: grapeIdle 2s ease-in-out infinite;
+      transform-origin: bottom center;
+    }
+    @keyframes grapeIdle {
+      0%, 100% { transform: translateY(0)    scaleX(1)    scaleY(1); }
+      25%       { transform: translateY(-6px) scaleX(0.97) scaleY(1.03); }
+      75%       { transform: translateY(-3px) scaleX(1.02) scaleY(0.98); }
+    }
+
+    .grape-hopping .grape-body-wrap {
+      animation: grapeHop 0.5s ease-in-out;
+    }
+    @keyframes grapeHop {
+      0%   { transform: translateY(0)     scaleX(1)    scaleY(1); }
+      30%  { transform: translateY(-20px) scaleX(0.9)  scaleY(1.1); }
+      60%  { transform: translateY(-14px) scaleX(0.88) scaleY(1.12); }
+      80%  { transform: translateY(-2px)  scaleX(1.1)  scaleY(0.9); }
+      90%  { transform: translateY(2px)   scaleX(1.06) scaleY(0.94); }
+      100% { transform: translateY(0)     scaleX(1)    scaleY(1); }
+    }
+
+    /* ============================================================
+       MOBILE LAYOUT
+    ============================================================ */
+    @media (max-width: 768px) {
+      #vineyard-world {
+        flex-direction: column;
+        height: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+        scroll-snap-type: y mandatory;
+      }
+      .vineyard-panel {
+        flex: 0 0 auto;
+        width: 100%;
+        height: 100svh;
+        scroll-snap-align: start;
+      }
+      #grape-character {
+        bottom: 24%;
+        left: 50%;
+        transform: translateX(-50%);
+        transition: none;
+      }
+    }
+
+    /* ============================================================
+       MODAL / INFO PANEL
+    ============================================================ */
+    #modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(30, 10, 18, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+    #modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #modal-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(560px, 100vw);
+      height: 100vh;
+      background: var(--cream);
+      z-index: 101;
+      overflow-y: auto;
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      padding: 0 0 3rem;
+    }
+    #modal-panel.open {
+      transform: translateX(0);
+    }
+
+    /* Wine-stain watercolor decoration */
+    .modal-stain {
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(91,35,51,0.18) 0%, rgba(91,35,51,0.08) 50%, transparent 70%);
+      pointer-events: none;
+    }
+    .modal-stain-2 {
+      position: absolute;
+      bottom: 80px;
+      left: -30px;
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212,168,67,0.12) 0%, rgba(212,168,67,0.04) 50%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .modal-header {
+      position: sticky;
+      top: 0;
+      background: var(--burgundy);
+      padding: 1.25rem 1.75rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      z-index: 2;
+    }
+
+    .modal-station-icon {
+      flex: 0 0 56px;
+    }
+
+    .modal-header-text h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      font-weight: 700;
+      color: var(--cream);
+      line-height: 1.15;
+    }
+    .modal-header-text .modal-tagline {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 0.9rem;
+      color: var(--amber);
+      margin-top: 0.15rem;
+    }
+
+    .modal-close-btn {
+      margin-left: auto;
+      flex: 0 0 auto;
+      background: transparent;
+      border: 2px solid rgba(245,236,215,0.4);
+      color: var(--cream);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, border-color 0.2s;
+      font-family: var(--font-display);
+    }
+    .modal-close-btn:hover, .modal-close-btn:focus-visible {
+      background: rgba(245,236,215,0.15);
+      border-color: var(--amber);
+      outline: none;
+    }
+    .modal-close-btn:focus-visible {
+      outline: 2px solid var(--amber);
+      outline-offset: 2px;
+    }
+
+    .modal-body {
+      position: relative;
+      padding: 2rem 1.75rem;
+    }
+
+    .modal-section {
+      margin-bottom: 1.8rem;
+    }
+
+    .modal-section-label {
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--burgundy);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .modal-section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--burgundy) 0%, transparent 100%);
+      opacity: 0.25;
+    }
+
+    .modal-section p {
+      font-family: var(--font-body);
+      font-size: 0.97rem;
+      line-height: 1.7;
+      color: var(--charcoal);
+    }
+
+    /* Stats grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    .stat-card {
+      background: var(--burgundy);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      font-weight: 700;
+      color: var(--amber);
+      line-height: 1.2;
+    }
+    .stat-label {
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      color: rgba(245,236,215,0.8);
+      margin-top: 0.3rem;
+      line-height: 1.4;
+    }
+
+    /* Flavor note */
+    .flavor-note {
+      background: linear-gradient(135deg, rgba(91,35,51,0.08) 0%, rgba(212,168,67,0.1) 100%);
+      border-left: 3px solid var(--amber);
+      border-radius: 0 8px 8px 0;
+      padding: 0.75rem 1rem;
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--charcoal);
+    }
+
+    /* Sustainability rating */
+    .sustainability-rating {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+    .leaf-rating {
+      display: flex;
+      gap: 4px;
+    }
+    .leaf {
+      font-size: 1.3rem;
+      filter: grayscale(1) opacity(0.3);
+      transition: filter 0.3s;
+    }
+    .leaf.filled { filter: grayscale(0) opacity(1); }
+    .sustainability-note {
+      font-size: 0.85rem;
+      color: var(--charcoal);
+      flex-basis: 100%;
+      margin-top: 0.25rem;
+      font-style: italic;
+    }
+
+    /* Return button */
+    .return-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 1rem 1.75rem 0;
+      padding: 0.65rem 1.4rem;
+      background: transparent;
+      border: 2px solid var(--burgundy);
+      color: var(--burgundy);
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.9rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      width: fit-content;
+    }
+    .return-btn:hover, .return-btn:focus-visible {
+      background: var(--burgundy);
+      color: var(--cream);
+      outline: none;
+    }
+    .return-btn:focus-visible {
+      outline: 2px solid var(--burgundy);
+      outline-offset: 3px;
+    }
+    /* vine tendril decoration */
+    .return-btn::before {
+      content: '🌿';
+      font-size: 0.9em;
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    #footer-panel {
+      flex: 0 0 100vw;
+      width: 100vw;
+      height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #1a0a12 0%, #2D1020 100%);
+      position: relative;
+      overflow: hidden;
+      z-index: 2;
+    }
+    #footer-panel .footer-grape {
+      margin-bottom: 2rem;
+      opacity: 0.85;
+    }
+    .footer-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      font-weight: 700;
+      color: var(--amber);
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    .footer-sub {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.1rem;
+      color: rgba(245,236,215,0.7);
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .footer-credit {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: rgba(245,236,215,0.5);
+      text-align: center;
+      max-width: 480px;
+      line-height: 1.7;
+    }
+    .footer-credit a {
+      color: var(--amber);
+      text-decoration: none;
+    }
+    .footer-divider {
+      width: 60px;
+      height: 2px;
+      background: var(--amber);
+      margin: 1.5rem auto;
+      opacity: 0.5;
+      border-radius: 2px;
+    }
+
+    /* ============================================================
+       NAV DOTS (progress indicator)
+    ============================================================ */
+    #nav-dots {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 50;
+    }
+    .nav-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(245,236,215,0.35);
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+      padding: 0;
+    }
+    .nav-dot.active {
+      background: var(--amber);
+      transform: scale(1.4);
+    }
+    .nav-dot:focus-visible {
+      outline: 2px solid var(--amber);
+      outline-offset: 3px;
+    }
+
+    /* ============================================================
+       SCROLL HINT
+    ============================================================ */
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      color: rgba(245,236,215,0.5);
+      letter-spacing: 0.1em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      animation: hintFade 2s ease-in-out 3s forwards;
+      opacity: 0;
+    }
+    @keyframes hintFade {
+      0%   { opacity: 0; }
+      20%  { opacity: 1; }
+      80%  { opacity: 1; }
+      100% { opacity: 0.3; }
+    }
+    .scroll-hint-arrow {
+      font-size: 1.2rem;
+      animation: bounceRight 1s ease-in-out infinite;
+    }
+    @keyframes bounceRight {
+      0%, 100% { transform: translateX(0); }
+      50%       { transform: translateX(6px); }
+    }
+    @media (max-width: 768px) {
+      .scroll-hint-arrow { animation-name: bounceDown; }
+      @keyframes bounceDown {
+        0%, 100% { transform: translateY(0); }
+        50%       { transform: translateY(6px); }
+      }
+    }
+
+    /* ============================================================
+       SKIP-TO-CONTENT
+    ============================================================ */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 1rem;
+      background: var(--amber);
+      color: var(--charcoal);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-weight: 600;
+      z-index: 9999;
+      transition: top 0.2s;
+    }
+    .skip-link:focus { top: 1rem; }
+
+  </style>
+</head>
+<body>
+  <a href="#vineyard-world" class="skip-link">Skip to vineyard</a>
+
+  <!-- ============================================================
+       OPENING SCENE
+  ============================================================ -->
+  <section id="opening-scene" aria-label="Opening scene">
+    <!-- Stars -->
+    <div class="stars" aria-hidden="true" id="stars-container"></div>
+
+    <!-- Hills SVG -->
+    <div class="opening-hills" aria-hidden="true">
+      <svg class="hill-far" viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,200 L0,120 Q180,40 360,90 Q540,140 720,70 Q900,10 1080,60 Q1260,110 1440,50 L1440,200 Z" fill="#4A1E2A" opacity="0.7"/>
+        <path d="M0,200 L0,150 Q200,90 400,120 Q600,150 800,100 Q1000,50 1200,90 Q1350,120 1440,80 L1440,200 Z" fill="#3D1520" opacity="0.8"/>
+      </svg>
+      <svg class="hill-near" viewBox="0 0 1440 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,130 L0,80 Q120,30 300,60 Q480,90 600,50 Q720,20 900,55 Q1080,90 1200,60 Q1320,35 1440,70 L1440,130 Z" fill="#6B3A28" opacity="0.9"/>
+      </svg>
+    </div>
+
+    <div class="opening-content">
+      <p class="opening-eyebrow">A University Wines of the World Project</p>
+      <h1 class="opening-title">Journey of a <em>Grape</em></h1>
+      <p class="opening-subtitle">How Packaging Shapes Your Wine</p>
+
+      <div class="opening-grape-wrap" aria-hidden="true">
+        <!-- Grape SVG -->
+        <svg width="100" height="120" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <style>
+            @keyframes openingBob {
+              0%,100% { transform: translateY(0); }
+              50% { transform: translateY(-8px); }
+            }
+            .opening-grape-g { animation: openingBob 2s ease-in-out infinite; transform-origin: 50px 100px; }
+          </style>
+          <g class="opening-grape-g">
+            <!-- Leaf -->
+            <ellipse cx="50" cy="14" rx="14" ry="10" fill="#3D6B3A" transform="rotate(-20,50,14)"/>
+            <ellipse cx="50" cy="14" rx="14" ry="10" fill="#4A8040" opacity="0.5" transform="rotate(15,50,14)"/>
+            <!-- Stem -->
+            <line x1="50" y1="20" x2="50" y2="32" stroke="#5A3A20" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Body -->
+            <circle cx="50" cy="70" r="38" fill="#6B3FA0"/>
+            <circle cx="50" cy="70" r="38" fill="url(#grapeGrad1)"/>
+            <!-- Shine -->
+            <ellipse cx="38" cy="54" rx="10" ry="7" fill="rgba(255,255,255,0.22)" transform="rotate(-20,38,54)"/>
+            <!-- Eyes -->
+            <circle cx="41" cy="66" r="4" fill="#2D1060"/>
+            <circle cx="59" cy="66" r="4" fill="#2D1060"/>
+            <circle cx="42.5" cy="64.5" r="1.5" fill="white"/>
+            <circle cx="60.5" cy="64.5" r="1.5" fill="white"/>
+            <!-- Smile -->
+            <path d="M42 76 Q50 83 58 76" stroke="#2D1060" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+            <!-- Cheeks -->
+            <ellipse cx="34" cy="74" rx="5" ry="3.5" fill="rgba(200,80,120,0.3)"/>
+            <ellipse cx="66" cy="74" rx="5" ry="3.5" fill="rgba(200,80,120,0.3)"/>
+            <defs>
+              <radialGradient id="grapeGrad1" cx="40%" cy="35%">
+                <stop offset="0%" stop-color="#9B6FD0"/>
+                <stop offset="60%" stop-color="#6B3FA0"/>
+                <stop offset="100%" stop-color="#4A2970"/>
+              </radialGradient>
+            </defs>
+          </g>
+        </svg>
+      </div>
+
+      <a href="#vineyard-world" class="begin-btn" id="begin-btn" role="button">
+        Begin your journey <span class="arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+
+    <div class="scroll-hint" aria-hidden="true">
+      <span>Scroll to explore</span>
+      <span class="scroll-hint-arrow">→</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       VINEYARD WORLD
+  ============================================================ -->
+  <main id="vineyard-world" aria-label="Vineyard journey — 9 stations to explore">
+
+    <!-- PANEL 0: Intro / entrance -->
+    <section class="vineyard-panel" id="panel-intro" aria-label="Vineyard entrance">
+      <div class="ground-strip" aria-hidden="true"></div>
+      <div class="path-strip" aria-hidden="true"></div>
+      <!-- Distant hills -->
+      <svg class="hills-layer" viewBox="0 0 1440 180" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="height:180px">
+        <path d="M0,180 L0,100 Q240,20 480,70 Q720,120 960,50 Q1200,0 1440,60 L1440,180 Z" fill="#3D1A22" opacity="0.6"/>
+        <path d="M0,180 L0,130 Q300,70 600,100 Q900,130 1100,80 Q1300,50 1440,90 L1440,180 Z" fill="#5B2333" opacity="0.5"/>
+      </svg>
+      <!-- Vine decorations -->
+      <div class="vine-row" aria-hidden="true" id="vines-intro"></div>
+
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);text-align:center;z-index:15;pointer-events:none;">
+        <p style="font-family:var(--font-display);font-style:italic;font-size:clamp(1rem,2.5vw,1.6rem);color:var(--cream);opacity:0.75;text-shadow:0 2px 10px rgba(0,0,0,0.6);">
+          Nine stops await along the vineyard path…
+        </p>
+      </div>
+
+      <div class="scroll-hint" aria-hidden="true" style="animation-delay:0s;opacity:1;">
+        <span>Scroll to explore</span>
+        <span class="scroll-hint-arrow">→</span>
+      </div>
+    </section>
+
+    <!-- STATION PANELS 1-9 generated by JS -->
+
+    <!-- Footer panel (inside vineyard scroll) -->
+    <div id="footer-panel" aria-label="Credits">
+    <div class="footer-grape" aria-hidden="true">
+      <svg width="60" height="72" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="14" rx="14" ry="10" fill="#3D6B3A" transform="rotate(-20,50,14)"/>
+        <line x1="50" y1="20" x2="50" y2="32" stroke="#5A3A20" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="50" cy="70" r="38" fill="#6B3FA0"/>
+        <circle cx="50" cy="70" r="38" fill="url(#footerGrapeGrad)"/>
+        <ellipse cx="38" cy="54" rx="10" ry="7" fill="rgba(255,255,255,0.2)" transform="rotate(-20,38,54)"/>
+        <circle cx="41" cy="66" r="4" fill="#2D1060"/>
+        <circle cx="59" cy="66" r="4" fill="#2D1060"/>
+        <circle cx="42.5" cy="64.5" r="1.5" fill="white"/>
+        <circle cx="60.5" cy="64.5" r="1.5" fill="white"/>
+        <path d="M42 76 Q50 83 58 76" stroke="#2D1060" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <defs>
+          <radialGradient id="footerGrapeGrad" cx="40%" cy="35%">
+            <stop offset="0%" stop-color="#9B6FD0"/>
+            <stop offset="60%" stop-color="#6B3FA0"/>
+            <stop offset="100%" stop-color="#4A2970"/>
+          </radialGradient>
+        </defs>
+      </svg>
+    </div>
+    <p class="footer-title">End of the Vineyard Path</p>
+    <p class="footer-sub">You've met every bottle, can, and keg along the way.</p>
+    <div class="footer-divider"></div>
+    <p class="footer-credit">
+      A project for <strong>Wines of the World</strong> — University, 2026<br/>
+      Data sourced from peer-reviewed enology research.<br/>
+      Built entirely in HTML, CSS &amp; vanilla JS — no frameworks, no stock photos.
+    </p>
+  </div>
+
+  </main>
+
+  <!-- Grape character (fixed) -->
+  <div id="grape-character" aria-hidden="true" role="presentation">
+    <div class="grape-body-wrap">
+      <svg width="72" height="86" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="14" rx="14" ry="10" fill="#3D6B3A" transform="rotate(-20,50,14)"/>
+        <ellipse cx="50" cy="14" rx="14" ry="10" fill="#4A8040" opacity="0.5" transform="rotate(15,50,14)"/>
+        <line x1="50" y1="20" x2="50" y2="32" stroke="#5A3A20" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="50" cy="70" r="38" fill="#6B3FA0"/>
+        <circle cx="50" cy="70" r="38" fill="url(#mainGrapeGrad)"/>
+        <ellipse cx="38" cy="54" rx="10" ry="7" fill="rgba(255,255,255,0.22)" transform="rotate(-20,38,54)"/>
+        <circle cx="41" cy="66" r="4" fill="#2D1060"/>
+        <circle cx="59" cy="66" r="4" fill="#2D1060"/>
+        <circle cx="42.5" cy="64.5" r="1.5" fill="white"/>
+        <circle cx="60.5" cy="64.5" r="1.5" fill="white"/>
+        <path d="M42 76 Q50 83 58 76" stroke="#2D1060" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <ellipse cx="34" cy="74" rx="5" ry="3.5" fill="rgba(200,80,120,0.3)"/>
+        <ellipse cx="66" cy="74" rx="5" ry="3.5" fill="rgba(200,80,120,0.3)"/>
+        <defs>
+          <radialGradient id="mainGrapeGrad" cx="40%" cy="35%">
+            <stop offset="0%" stop-color="#9B6FD0"/>
+            <stop offset="60%" stop-color="#6B3FA0"/>
+            <stop offset="100%" stop-color="#4A2970"/>
+          </radialGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Navigation dots -->
+  <nav id="nav-dots" aria-label="Station navigation"></nav>
+
+  <!-- Modal overlay -->
+  <div id="modal-overlay" role="presentation" aria-hidden="true"></div>
+
+  <!-- Modal panel -->
+  <aside id="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-hidden="true" tabindex="-1">
+    <div class="modal-stain" aria-hidden="true"></div>
+    <div class="modal-stain-2" aria-hidden="true"></div>
+
+    <header class="modal-header">
+      <div class="modal-station-icon" id="modal-icon" aria-hidden="true"></div>
+      <div class="modal-header-text">
+        <h2 id="modal-title">Station Name</h2>
+        <p class="modal-tagline" id="modal-tagline"></p>
+      </div>
+      <button class="modal-close-btn" id="modal-close" aria-label="Close station info">✕</button>
+    </header>
+
+    <div class="modal-body">
+      <!-- The Good -->
+      <div class="modal-section" id="modal-good-section">
+        <p class="modal-section-label">🍇 The Good</p>
+        <p id="modal-good"></p>
+      </div>
+
+      <!-- The Tricky -->
+      <div class="modal-section" id="modal-tricky-section">
+        <p class="modal-section-label">⚠️ The Tricky</p>
+        <p id="modal-tricky"></p>
+      </div>
+
+      <!-- By the Numbers -->
+      <div class="modal-section">
+        <p class="modal-section-label">📊 By the Numbers</p>
+        <div class="stats-grid" id="modal-stats"></div>
+      </div>
+
+      <!-- Flavor Impact -->
+      <div class="modal-section">
+        <p class="modal-section-label">👅 Flavor Impact</p>
+        <div class="flavor-note" id="modal-flavor"></div>
+      </div>
+
+      <!-- Sustainability -->
+      <div class="modal-section">
+        <p class="modal-section-label">🌱 Sustainability Score</p>
+        <div class="sustainability-rating">
+          <div class="leaf-rating" id="modal-leaves" aria-label="Sustainability rating"></div>
+          <span class="sustainability-note" id="modal-sustain-note"></span>
+        </div>
+      </div>
+    </div>
+
+    <button class="return-btn" id="return-btn">Return to Vineyard</button>
+  </aside>
+
+  <script>
+  /* ================================================================
+     STATION DATA
+  ================================================================ */
+  const STATIONS = [
+    {
+      id: 'natural-cork',
+      name: 'Natural Cork',
+      tagline: 'The Ancient Guardian',
+      sustainScore: 4,
+      sustainNote: 'Cork oak forests are renewable and carbon-sequestering, but processing has a footprint.',
+      good: 'Allows gentle micro-oxygenation that coaxes complex wines into magnificent age. Centuries of tradition whisper through every bottle. A natural material with a living history.',
+      tricky: 'TCA contamination — the infamous "cork taint" — can strike roughly 3–5% of bottles, leaving a musty, wet-cardboard off-flavor that even the finest wine can\'t hide.',
+      flavor: 'Can contribute to hauntingly complex tertiary aromas — leather, earth, truffle — over decades of careful aging.',
+      stats: [
+        { value: '0.1–0.3 mg O₂/yr', label: 'Oxygen Transfer Rate' },
+        { value: '3–5%', label: 'Cork taint incidence' },
+        { value: '$0.15–0.50', label: 'Cost per unit' },
+        { value: '~70%', label: 'Global still-wine usage' },
+      ],
+      svgIcon: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <!-- Cork oak tree -->
+        <rect x="35" y="42" width="10" height="28" rx="3" fill="#7A5030"/>
+        <ellipse cx="40" cy="36" rx="22" ry="20" fill="#3D6B3A"/>
+        <ellipse cx="32" cy="40" rx="14" ry="12" fill="#4A8040"/>
+        <ellipse cx="50" cy="38" rx="12" ry="11" fill="#5A9050"/>
+        <!-- Cork bottle -->
+        <rect x="56" y="44" width="12" height="22" rx="2" fill="#C8A870"/>
+        <rect x="58" y="38" width="8" height="8" rx="1" fill="#8B6A40"/>
+        <rect x="57" y="44" width="12" height="3" fill="#A08050"/>
+      </svg>`,
+    },
+    {
+      id: 'synthetic-cork',
+      name: 'Synthetic Cork',
+      tagline: 'The Consistent Impostor',
+      sustainScore: 2,
+      sustainNote: 'Petroleum-derived and not widely recyclable — plant-based alternatives are emerging but still niche.',
+      good: 'Eliminates TCA risk entirely, so no cork taint worries here. Delivers consistent oxygen transfer from bottle to bottle, making quality control a dream for winemakers.',
+      tricky: 'Its higher OTR compared to natural cork can quietly accelerate oxidation over time. Notoriously slippery — once out, it\'s a puzzle to reseal. Best friend of wines drunk young.',
+      flavor: 'Minimal flavor contribution; a very slight risk of chemical "scalping" of aromatic compounds over extended storage.',
+      stats: [
+        { value: '0.5–2.0 mg O₂/yr', label: 'Oxygen Transfer Rate' },
+        { value: '$0.05–0.15', label: 'Cost per unit' },
+        { value: '1–2 yrs', label: 'Ideal drinking window' },
+        { value: '0% TCA', label: 'Cork taint risk' },
+      ],
+      svgIcon: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <!-- Synthetic cork - cylindrical, smooth -->
+        <rect x="28" y="20" width="24" height="46" rx="12" fill="#D0C0A8"/>
+        <rect x="28" y="20" width="24" height="46" rx="12" fill="url(#synthGrad)"/>
+        <ellipse cx="40" cy="20" rx="12" ry="5" fill="#E8D8C0"/>
+        <!-- Lines to show synthetic texture -->
+        <line x1="32" y1="30" x2="48" y2="30" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+        <line x1="32" y1="40" x2="48" y2="40" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+        <line x1="32" y1="50" x2="48" y2="50" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+        <defs>
+          <linearGradient id="synthGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="rgba(255,255,255,0.3)"/>
+            <stop offset="40%" stop-color="rgba(255,255,255,0)"/>
+            <stop offset="100%" stop-color="rgba(0,0,0,0.1)"/>
+          </linearGradient>
+        </defs>
+      </svg>`,
+    },
+    {
+      id: 'screw-cap',
+      name: 'Screw Cap (Stelvin)',
+      tagline: 'The Precise Protector',
+      sustainScore: 3,
+      sustainNote: 'Aluminum is recyclable, but the mining and refining process carries notable environmental costs.',
+      good: 'Near-zero TCA risk and an extremely low, precisely controllable oxygen transfer rate. Unmatched consistency from bottle to bottle — a winemaker\'s reliable companion.',
+      tricky: 'Cultural resistance lingers in premium markets — many still associate the twist-off with cheap plonk. Ultra-low OTR can also trap reductive sulfur faults if winemaking isn\'t carefully managed.',
+      flavor: 'Preserves primary fruit character with extraordinary fidelity — citrus, floral notes, and fresh aromatics stay vibrant for years.',
+      stats: [
+        { value: '0.0005–0.001 cc/day', label: 'Oxygen Transfer Rate' },
+        { value: '$0.08–0.12', label: 'Cost per unit' },
+        { value: '>90%', label: 'Australia/NZ market share' },
+        { value: '~0%', label: 'TCA taint risk' },
+      ],
+      svgIcon: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <!-- Screw cap bottle top -->
+        <rect x="30" y="10" width="20" height="12" rx="3" fill="#B0B8C0"/>
+        <rect x="28" y="22" width="24" height="45" rx="4" fill="#C8D0D8"/>
+        <rect x="30" y="10" width="20" height="12" rx="3" fill="url(#screwGrad)"/>
+        <!-- Ridges on cap -->
+        <line x1="30" y1="14" x2="50" y2="14" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+        <line x1="30" y1="17" x2="50" y2="17" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+        <line x1="30" y1="20" x2="50" y2="20" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+        <!-- Wine in bottle -->
+        <rect x="32" y="38" width="16" height="29" rx="3" fill="#8B2040" opacity="0.8"/>
+        <!-- Shine -->
+        <rect x="32" y="22" width="5" height="45" rx="2" fill="rgba(255,255,255,0.25)"/>
+        <defs>
+          <linearGradient id="screwGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="rgba(255,255,255,0.4)"/>
+            <stop offset="100%" stop-color="rgba(0,0,0,0.15)"/>
+          </linearGradient>
+        </defs>
+      </svg>`,
+    },
+    {
+      id: 'glass-seal',
+      name: 'Glass Seal (Vino-Lok)',
+      tagline: 'The Crystal Hermit',
+      sustainScore: 3,
+      sustainNote: 'Glass is recyclable but energy-intensive to produce — beautiful but demanding.',
+      good: 'Absolute zero TCA. Creates a perfectly hermetic seal — not a whisper of outside air gets in. Elegant and sophisticated, it\'s the jeweler\'s choice for premium wines.',
+      tricky: 'Higher cost makes it a luxury option, and bottles require a special proprietary neck finish. Adoption remains delightfully niche — mostly Austrian, German, and prestige labels.',
+      flavor: 'No flavor interaction whatsoever. The purest, most faithful expression of the winemaker\'s exact intent.',
+      stats: [
+        { value: '~0 cc/day', label: 'Oxygen Transfer Rate (hermetic)' },
+        { value: '$0.50–1.00', label: 'Cost per unit' },
+        { value: 'Niche', label: 'Primary market: Austria, Germany' },
+        { value: '0%', label: 'TCA risk' },
+      ],
+      svgIcon: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <!-- Elegant glass seal bottle -->
+        <rect x="30" y="28" width="20" height="44" rx="4" fill="#A8C8D8" opacity="0.7"/>
+        <!-- Glass stopper -->
+        <rect x="33" y="18" width="14" height="12" rx="3" fill="#D0E8F0"/>
+        <ellipse cx="40" cy="18" rx="7" ry="3.5" fill="#E8F4F8"/>
+        <ellipse cx="40" cy="30" rx="7" ry="3.5" fill="#C0D8E8"/>
+        <!-- Shine on bottle -->
+        <rect x="32" y="30" width="5" height="40" rx="2" fill="rgba(255,255,255,0.4)"/>
+        <!-- Wine -->
+        <rect x="32" y="44" width="16" height="28" rx="3" fill="#6B1A30" opacity="0.6"/>
+        <!-- Sparkle -->
+        <text x="55" y="25" font-size="12" fill="#D4A843">✦</text>
+      </svg>`,
+    },
+    {
+      id: 'bag-in-box',
+      name: 'Bag-in-Box',
+      tagline: 'The Clever Collapser',
+      sustainScore: 4,
+      sustainNote: 'Lower carbon footprint per serving than glass — the collapsing bag is ingenious, though bladder recyclability varies by region.',
+      good: 'After opening, the collapsing bladder is a stroke of genius — it minimizes air contact, keeping your wine fresh for an astonishing 4–6 weeks. Popular in Scandinavia for good reason.',
+      tricky: 'Consumer perception as "cheap wine" remains a persistent hurdle despite genuinely excellent preservation. Older bladder materials raised BPA concerns — most modern versions use food-safe alternatives.',
+      flavor: 'Flavor-neutral when food-grade bladder materials are used. Zero light-strike risk — your wine stays happy in its cozy cardboard castle.',
+      stats: [
+        { value: '4–6 weeks', label: 'Freshness after opening' },
+        { value: '$0.30–0.60', label: 'Cost per unit (3L)' },
+        { value: '~50%', label: 'Wine sold in Scandinavia this way' },
+        { value: '3L/5L', label: 'Common formats' },
+      ],
+      svgIcon: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <!-- Cardboard box -->
+        <rect x="16" y="28" width="48" height="42" rx="4" fill="#C8A860"/>
+        <rect x="16" y="28" width="48" height="8" rx="4" fill="#D8B870"/>
+        <!-- Box lines -->
+        <line x1="40" y1="28" x2="40" y2="70" stroke="rgba(0,0,0,0.1)" stroke-width="1.5"/>
+        <line x1="16" y1="48" x2="64" y2="48" stroke="rgba(0,0,0,0.08)" stroke-width="1.5"/>
+        <!-- Tap/spout -->
+        <rect x="34" y="55" width="12" height="8" rx="2" fill="#8B6030"/>
+        <rect x="38" y="59" width="4" height="6" rx="1" fill="#6B4020"/>
+        <!-- Label -->
+        <rect x="22" y="50" width="22" height="14" rx="2" fill="rgba(255,255,255,0.5)"/>
+        <text x="26" y="60" font-size="6" fill="#5B2333" font-family="serif">WINE</text>
+      </svg>`,
+    },
+    {
+      id: 'tetra-pak',
+      name: 'Tetra Pak / Carton',
+      tagline: 'The Lightweight Traveler',
+      sustainScore: 3,
+      sustainNote: 'Lower transport emissions per litre, but the composite paper-plastic-aluminum laminate makes recycling genuinely difficult.',
+      good: 'Ultra-lightweight and extraordinarily efficient to transport — full light protection, zero air infiltration. A carbon-footprint champion at the distribution stage.',
+      tricky: 'Limited aging potential by design — these wines are born to be drunk now, not cellared. The mixed-material construction makes post-consumer recycling complex and infrastructure-dependent.',
+      flavor: 'Designed for immediate consumption; flavor-neutral when properly food-safe lined. Drink fresh, drink happy.',
+      stats: [
+        { value: '1/8 weight', label: 'Compared to glass equivalent' },
+        { value: '~40% less', label: 'Carbon footprint vs glass' },
+        { value: '0 aging', label: 'Not designed for cellaring' },
+        { value: 'Growing', label: 'Casual/everyday segment share' },
+      ],
+      svgIcon: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <!-- Tetra pak carton shape -->
+        <rect x="24" y="22" width="32" height="48" rx="3" fill="#E8D8B0"/>
+        <rect x="24" y="22" width="32" height="10" rx="3" fill="#C8B890"/>
+        <!-- Fold lines at top -->
+        <path d="M24 22 L40 16 L56 22" fill="#D8C8A0" stroke="#B8A880" stroke-width="1"/>
+        <!-- Straw hole -->
+        <circle cx="40" cy="19" r="2.5" fill="#8B6840"/>
+        <line x1="40" y1="16" x2="40" y2="10" stroke="#8B6840" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Label block -->
+        <rect x="28" y="36" width="24" height="24" rx="2" fill="rgba(255,255,255,0.6)"/>
+        <text x="31" y="48" font-size="5.5" fill="#5B2333" font-family="serif">VINEYARD</text>
+        <text x="35" y="56" font-size="5" fill="#5B2333" font-family="serif">WINE</text>
+      </svg>`,
+    },
+    {
+      id: 'aluminum-can',
+      name: 'Aluminum Can',
+      tagline: 'The Pocket-Sized Party',
+      sustainScore: 4,
+      sustainNote: 'Aluminum is infinitely recyclable with some of the highest recovery rates of any packaging material.',
+      good: 'Portable, single-serve, instantly chillable — and full light protection to boot. The fastest-growing wine packaging segment for a reason: convenience is king.',
+      tricky: 'BPA/BPS liner concerns persist, though most brands have gone BPA-free. Absolutely not suited for aging, and some perceive a subtle metallic or carbonation note.',
+      flavor: 'Modern food-grade linings are genuinely flavor-neutral. Best showcased by fresh, aromatic whites, light reds, and vibrant rosés — drink cold, drink now.',
+      stats: [
+        { value: '~15%/yr', label: 'Annual growth pre-2024' },
+        { value: '$0.10–0.20', label: 'Cost per unit' },
+        { value: '250 ml', label: 'Standard serve size' },
+        { value: 'BPA-free', label: 'Most modern cans' },
+      ],
+      svgIcon: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <!-- Can body -->
+        <rect x="26" y="22" width="28" height="46" rx="6" fill="#C0C8D0"/>
+        <rect x="26" y="22" width="28" height="46" rx="6" fill="url(#canGrad)"/>
+        <!-- Top rim -->
+        <ellipse cx="40" cy="22" rx="14" ry="5" fill="#D0D8E0"/>
+        <!-- Tab -->
+        <ellipse cx="40" cy="20" rx="8" ry="3.5" fill="#B0B8C0"/>
+        <rect x="37" y="16" width="6" height="5" rx="1" fill="#A0A8B0"/>
+        <rect x="38.5" y="14" width="3" height="3" rx="1.5" fill="#909098"/>
+        <!-- Label on can -->
+        <rect x="28" y="32" width="24" height="24" rx="1" fill="#8B2040"/>
+        <text x="30" y="45" font-size="7" fill="var(--amber)" font-weight="bold" font-family="sans-serif">WINE</text>
+        <!-- Shine -->
+        <rect x="27" y="22" width="5" height="46" rx="2" fill="rgba(255,255,255,0.3)"/>
+        <defs>
+          <linearGradient id="canGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="rgba(255,255,255,0.3)"/>
+            <stop offset="40%" stop-color="rgba(255,255,255,0)"/>
+            <stop offset="100%" stop-color="rgba(0,0,0,0.15)"/>
+          </linearGradient>
+        </defs>
+      </svg>`,
+    },
+    {
+      id: 'pet-bottle',
+      name: 'PET Plastic Bottle',
+      tagline: 'The Shatterproof Workhorse',
+      sustainScore: 2,
+      sustainNote: 'Technically recyclable but actual recovery rates remain dismally low, and microplastic concerns are serious.',
+      good: 'Completely shatterproof — a blessing at outdoor events, festivals, and 30,000 feet. Ultralight and cheap to produce, making it practical for everyday and travel use.',
+      tricky: 'OTR roughly 10× higher than glass means wine ages — and deteriorates — fast. Acetaldehyde can migrate from plastic into the wine. Consumer perception remains an uphill climb.',
+      flavor: 'Best consumed within 6–12 months. Risk of subtle plastic-like off-flavors creeping in during extended storage — freshness is non-negotiable here.',
+      stats: [
+        { value: '~10× OTR', label: 'Compared to glass' },
+        { value: '~60% lighter', label: 'Than equivalent glass bottle' },
+        { value: '6–12 months', label: 'Recommended drink window' },
+        { value: 'Airline/Event', label: 'Primary usage context' },
+      ],
+      svgIcon: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <!-- PET bottle shape - slightly irregular -->
+        <path d="M35 18 Q30 20 28 30 L26 50 Q25 65 28 68 L52 68 Q55 65 54 50 L52 30 Q50 20 45 18 Z" fill="#D0E8F8" opacity="0.85"/>
+        <path d="M35 18 Q30 20 28 30 L26 50 Q25 65 28 68 L52 68 Q55 65 54 50 L52 30 Q50 20 45 18 Z" fill="url(#petGrad)" opacity="0.5"/>
+        <!-- Cap -->
+        <rect x="35" y="10" width="10" height="10" rx="3" fill="#3060A0"/>
+        <ellipse cx="40" cy="10" rx="5" ry="2.5" fill="#4070B8"/>
+        <!-- Label -->
+        <rect x="28" y="38" width="24" height="20" rx="2" fill="rgba(255,255,255,0.7)"/>
+        <text x="30" y="50" font-size="5.5" fill="#5B2333" font-family="serif">VINEYARD</text>
+        <text x="34" y="56" font-size="5" fill="#5B2333" font-family="serif">WINE</text>
+        <!-- Shine -->
+        <path d="M28 28 Q30 20 35 18 L35 65 Q28 60 26 50 Z" fill="rgba(255,255,255,0.35)"/>
+        <defs>
+          <linearGradient id="petGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="rgba(255,255,255,0.5)"/>
+            <stop offset="100%" stop-color="rgba(0,0,0,0.1)"/>
+          </linearGradient>
+        </defs>
+      </svg>`,
+    },
+    {
+      id: 'kegged',
+      name: 'Kegged / On-Tap',
+      tagline: 'The Zero-Waste Champion',
+      sustainScore: 5,
+      sustainNote: 'Stainless steel kegs are reusable for 30+ years with inert gas preservation — the lowest per-serve footprint in wine packaging.',
+      good: 'Zero packaging waste per glass served. Inert gas systems preserve wine for weeks after tapping. Temperature-controlled perfection: every pour identical, every glass a joy.',
+      tricky: 'Requires specialized equipment — draught systems, gas canisters, keg storage. Effectively limited to restaurants, bars, and tasting rooms. You can\'t pop a keg in your handbag.',
+      flavor: 'Wine served in truly ideal conditions: temperature-controlled, zero cork variation, zero light exposure. Every pour is exactly what the winemaker intended.',
+      stats: [
+        { value: '~1 bottle', label: 'Eliminated per glass served' },
+        { value: '3–6 months', label: 'Keg shelf life' },
+        { value: '30+ years', label: 'Stainless keg reuse lifespan' },
+        { value: '0 waste', label: 'Per-serve packaging waste' },
+      ],
+      svgIcon: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <!-- Keg body -->
+        <ellipse cx="40" cy="40" rx="22" ry="28" fill="#909898"/>
+        <ellipse cx="40" cy="40" rx="22" ry="28" fill="url(#kegGrad)"/>
+        <!-- Top cap -->
+        <ellipse cx="40" cy="14" rx="12" ry="5" fill="#B0B8B8"/>
+        <ellipse cx="40" cy="66" rx="12" ry="5" fill="#A0A8A8"/>
+        <!-- Hoop rings -->
+        <ellipse cx="40" cy="28" rx="22" ry="6" fill="none" stroke="#707878" stroke-width="3"/>
+        <ellipse cx="40" cy="52" rx="22" ry="6" fill="none" stroke="#707878" stroke-width="3"/>
+        <!-- Tap -->
+        <rect x="36" y="12" width="8" height="4" rx="1" fill="#606868"/>
+        <rect x="38" y="8" width="4" height="6" rx="1" fill="#808888"/>
+        <!-- Shine -->
+        <ellipse cx="32" cy="34" rx="6" ry="10" fill="rgba(255,255,255,0.2)"/>
+        <defs>
+          <linearGradient id="kegGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="rgba(255,255,255,0.3)"/>
+            <stop offset="50%" stop-color="rgba(255,255,255,0)"/>
+            <stop offset="100%" stop-color="rgba(0,0,0,0.2)"/>
+          </linearGradient>
+        </defs>
+      </svg>`,
+    },
+  ];
+
+  /* ================================================================
+     SVG DEFS FOR GRAPE CHARACTER (shared radial gradient)
+  ================================================================ */
+  const VINE_SVG = (x = 0) => `
+    <svg width="60" height="90" viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- Post -->
+      <rect x="27" y="20" width="6" height="70" rx="3" fill="#7A5030"/>
+      <!-- Wire -->
+      <line x1="0" y1="30" x2="60" y2="30" stroke="#8B7050" stroke-width="1.5" opacity="0.6"/>
+      <!-- Leaves -->
+      <ellipse cx="16" cy="28" rx="10" ry="7" fill="#4A8040" transform="rotate(-20 16 28)" opacity="0.9"/>
+      <ellipse cx="44" cy="26" rx="9" ry="6" fill="#3D6B3A" transform="rotate(15 44 26)" opacity="0.9"/>
+      <ellipse cx="20" cy="42" rx="8" ry="5.5" fill="#5A9050" transform="rotate(-30 20 42)" opacity="0.8"/>
+      <!-- Grape clusters -->
+      <circle cx="15" cy="38" r="4" fill="#6B3FA0" opacity="0.85"/>
+      <circle cx="22" cy="36" r="3.5" fill="#7B4FB0" opacity="0.85"/>
+      <circle cx="13" cy="44" r="3.5" fill="#5B2F90" opacity="0.85"/>
+      <circle cx="42" cy="36" r="4" fill="#6B3FA0" opacity="0.85"/>
+      <circle cx="49" cy="38" r="3.5" fill="#5B2F90" opacity="0.85"/>
+    </svg>
+  `;
+
+  /* ================================================================
+     BUILD STATION PANELS
+  ================================================================ */
+  const vineyardWorld = document.getElementById('vineyard-world');
+  const navDotsContainer = document.getElementById('nav-dots');
+
+  // Panel backgrounds vary subtly
+  const panelBgs = [
+    'linear-gradient(180deg, #1C0A14 0%, #3D1A22 18%, #5B2333 40%, #8B6040 70%, #A07840 85%, #C8B870 100%)',
+    'linear-gradient(180deg, #1A0C16 0%, #3A1A24 20%, #5A2535 42%, #8A5A38 68%, #A07840 84%, #C0A860 100%)',
+    'linear-gradient(180deg, #1E0A10 0%, #3C1820 18%, #5C2230 40%, #8A5C3C 68%, #A47A42 84%, #C8B060 100%)',
+    'linear-gradient(180deg, #1C0C14 0%, #3E1C24 18%, #5E2434 40%, #8C5E3C 68%, #A47840 84%, #C4AC60 100%)',
+    'linear-gradient(180deg, #1A0E16 0%, #3C1E26 20%, #5A2636 42%, #8A5A3A 68%, #A27A42 84%, #C2AA60 100%)',
+    'linear-gradient(180deg, #200A12 0%, #3E1820 18%, #5C2232 40%, #8C5C3A 68%, #A27A40 84%, #C6B060 100%)',
+    'linear-gradient(180deg, #1C0A14 0%, #3C1A22 18%, #5A2432 40%, #8A5C3C 68%, #A27840 84%, #C4B060 100%)',
+    'linear-gradient(180deg, #1E0C14 0%, #3C1C22 18%, #5A2434 40%, #8C5C3C 68%, #A47840 84%, #C4AC60 100%)',
+    'linear-gradient(180deg, #180A14 0%, #381822 18%, #562233 40%, #885A3A 68%, #A07840 84%, #C2A860 100%)',
+  ];
+
+  // Landmark horizontal positions within each panel (as CSS left %)
+  const landmarkPositions = [38, 55, 42, 60, 35, 50, 40, 55, 45];
+
+  STATIONS.forEach((station, i) => {
+    /* --- Panel --- */
+    const panel = document.createElement('section');
+    panel.className = 'vineyard-panel';
+    panel.id = `panel-${station.id}`;
+    panel.setAttribute('aria-label', `Station ${i + 1}: ${station.name}`);
+    panel.style.background = panelBgs[i];
+
+    /* Ground */
+    panel.innerHTML = `
+      <div class="ground-strip" aria-hidden="true"></div>
+      <div class="path-strip" aria-hidden="true"></div>
+      <svg class="hills-layer" viewBox="0 0 1440 180" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="height:180px">
+        <path d="M0,180 L0,${90 + (i % 3) * 15} Q${240 + i * 40},${20 + i * 5} ${480 + i * 20},${70 + i * 8} Q${720 - i * 10},${120 - i * 5} ${960 + i * 15},${50 + i * 6} Q${1200 - i * 5},0 1440,${60 + i * 4} L1440,180 Z" fill="#3D1A22" opacity="0.55"/>
+        <path d="M0,180 L0,${120 + (i % 2) * 10} Q${300 + i * 20},${70 + i * 4} ${600 - i * 10},${100 + i * 5} Q${900 + i * 5},${120 + i * 3} ${1100 + i * 10},${80 + i * 4} Q${1300},${50 + i * 3} 1440,${90 + i * 2} L1440,180 Z" fill="#5B2333" opacity="0.45"/>
+      </svg>
+      <div class="vine-row" aria-hidden="true" id="vines-${station.id}">${
+        Array.from({ length: 8 }, (_, vi) => VINE_SVG(vi)).join('')
+      }</div>
+    `;
+
+    /* Station landmark */
+    const landmark = document.createElement('button');
+    landmark.className = 'station-landmark';
+    landmark.id = `station-${station.id}`;
+    landmark.setAttribute('aria-label', `Open ${station.name} info`);
+    landmark.setAttribute('aria-haspopup', 'dialog');
+    landmark.dataset.stationIndex = i;
+    landmark.style.left = `${landmarkPositions[i]}%`;
+
+    landmark.innerHTML = `
+      <div style="width:80px;height:80px;">${station.svgIcon}</div>
+      <div class="station-label">${i + 1}. ${station.name}</div>
+    `;
+
+    panel.appendChild(landmark);
+    vineyardWorld.appendChild(panel);
+
+    /* --- Nav dot --- */
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot';
+    dot.setAttribute('aria-label', `Go to station ${i + 1}: ${station.name}`);
+    dot.dataset.panelIndex = i + 1; // +1 because panel 0 is intro
+    navDotsContainer.appendChild(dot);
+  });
+
+  /* Intro dot */
+  const introDot = document.createElement('button');
+  introDot.className = 'nav-dot active';
+  introDot.setAttribute('aria-label', 'Go to vineyard entrance');
+  introDot.dataset.panelIndex = 0;
+  navDotsContainer.prepend(introDot);
+
+  /* Footer dot */
+  const footerDot = document.createElement('button');
+  footerDot.className = 'nav-dot';
+  footerDot.setAttribute('aria-label', 'Go to credits');
+  footerDot.dataset.panelIndex = STATIONS.length + 1;
+  navDotsContainer.appendChild(footerDot);
+
+  /* ================================================================
+     GRAPE CHARACTER POSITIONING
+  ================================================================ */
+  const grapeEl = document.getElementById('grape-character');
+
+  function getGrapeLeftForPanel(panelIndex) {
+    if (panelIndex === 0) return 80;
+    if (panelIndex > STATIONS.length) return window.innerWidth / 2 - 36;
+    const pos = landmarkPositions[panelIndex - 1];
+    const panelLeft = panelIndex * window.innerWidth;
+    const scrollLeft = vineyardWorld.scrollLeft;
+    // We want grape position relative to viewport
+    return panelLeft - scrollLeft + (window.innerWidth * pos / 100) - 36;
+  }
+
+  /* ================================================================
+     SCROLL TRACKING & NAV DOTS
+  ================================================================ */
+  const allPanels = [
+    document.getElementById('panel-intro'),
+    ...STATIONS.map(s => document.getElementById(`panel-${s.id}`)),
+    document.getElementById('footer-panel'),
+  ];
+
+  const allDots = Array.from(navDotsContainer.querySelectorAll('.nav-dot'));
+
+  let currentPanelIndex = 0;
+
+  function updateNavDots(index) {
+    allDots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === index);
+    });
+  }
+
+  function onScroll() {
+    const isMobile = window.innerWidth <= 768;
+    let scrollPos, totalScrollable, panelSize;
+
+    if (isMobile) {
+      scrollPos = window.scrollY || document.documentElement.scrollTop;
+      panelSize = window.innerHeight;
+    } else {
+      scrollPos = vineyardWorld.scrollLeft;
+      panelSize = window.innerWidth;
+    }
+
+    const panelIndex = Math.round(scrollPos / panelSize);
+    const clampedIndex = Math.max(0, Math.min(panelIndex, allDots.length - 1));
+
+    if (clampedIndex !== currentPanelIndex) {
+      currentPanelIndex = clampedIndex;
+      updateNavDots(clampedIndex);
+      moveGrape(clampedIndex);
+    }
+  }
+
+  function moveGrape(panelIndex) {
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) return;
+
+    grapeEl.classList.add('grape-hopping');
+    setTimeout(() => grapeEl.classList.remove('grape-hopping'), 600);
+
+    if (panelIndex === 0) {
+      grapeEl.style.left = '80px';
+    } else if (panelIndex > STATIONS.length) {
+      grapeEl.style.left = (window.innerWidth / 2 - 36) + 'px';
+    } else {
+      const pos = landmarkPositions[panelIndex - 1];
+      grapeEl.style.left = `calc(${pos}% - 36px)`;
+    }
+  }
+
+  vineyardWorld.addEventListener('scroll', onScroll, { passive: true });
+
+  /* ================================================================
+     NAV DOT CLICK HANDLERS
+  ================================================================ */
+  allDots.forEach((dot) => {
+    dot.addEventListener('click', () => {
+      const idx = parseInt(dot.dataset.panelIndex, 10);
+      scrollToPanel(idx);
+    });
+  });
+
+  function scrollToPanel(panelIndex) {
+    const isMobile = window.innerWidth <= 768;
+    const maxIndex = allPanels.length - 1;
+    const clampedIndex = Math.max(0, Math.min(panelIndex, maxIndex));
+    const targetPanel = allPanels[clampedIndex];
+    if (!targetPanel) return;
+    if (isMobile) {
+      targetPanel.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      vineyardWorld.scrollTo({ left: clampedIndex * window.innerWidth, behavior: 'smooth' });
+    }
+  }
+
+  /* Begin button */
+  document.getElementById('begin-btn').addEventListener('click', (e) => {
+    e.preventDefault();
+    const vineyard = document.getElementById('vineyard-world');
+    vineyard.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      vineyard.scrollTo({ left: 0, behavior: 'smooth' });
+    }, 400);
+  });
+
+  /* ================================================================
+     MODAL LOGIC
+  ================================================================ */
+  const modalOverlay = document.getElementById('modal-overlay');
+  const modalPanel   = document.getElementById('modal-panel');
+  const modalClose   = document.getElementById('modal-close');
+  const returnBtn    = document.getElementById('return-btn');
+
+  let lastFocusedStation = null;
+  let focusTrapElements = [];
+
+  function openModal(stationIndex) {
+    const station = STATIONS[stationIndex];
+    if (!station) return;
+
+    // Populate content
+    document.getElementById('modal-title').textContent = station.name;
+    document.getElementById('modal-tagline').textContent = station.tagline;
+    document.getElementById('modal-icon').innerHTML = station.svgIcon;
+    document.getElementById('modal-good').textContent = station.good;
+    document.getElementById('modal-tricky').textContent = station.tricky;
+    document.getElementById('modal-flavor').textContent = station.flavor;
+
+    // Stats
+    const statsGrid = document.getElementById('modal-stats');
+    statsGrid.innerHTML = station.stats.map(s => `
+      <div class="stat-card">
+        <div class="stat-value">${s.value}</div>
+        <div class="stat-label">${s.label}</div>
+      </div>
+    `).join('');
+
+    // Leaves
+    const leavesEl = document.getElementById('modal-leaves');
+    leavesEl.innerHTML = '';
+    leavesEl.setAttribute('aria-label', `${station.sustainScore} out of 5 leaves`);
+    for (let i = 1; i <= 5; i++) {
+      const leaf = document.createElement('span');
+      leaf.className = 'leaf' + (i <= station.sustainScore ? ' filled' : '');
+      leaf.textContent = '🍃';
+      leaf.setAttribute('aria-hidden', 'true');
+      leavesEl.appendChild(leaf);
+    }
+    document.getElementById('modal-sustain-note').textContent = station.sustainNote;
+
+    // Open
+    modalOverlay.classList.add('open');
+    modalPanel.classList.add('open');
+    modalOverlay.setAttribute('aria-hidden', 'false');
+    modalPanel.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+
+    // Focus management
+    lastFocusedStation = document.getElementById(`station-${station.id}`);
+    setTimeout(() => {
+      modalPanel.focus();
+    }, 100);
+
+    // Scroll modal to top
+    const modalBody = modalPanel.querySelector('.modal-body');
+    if (modalBody) modalBody.scrollTop = 0;
+    modalPanel.scrollTop = 0;
+  }
+
+  function closeModal() {
+    modalOverlay.classList.remove('open');
+    modalPanel.classList.remove('open');
+    modalOverlay.setAttribute('aria-hidden', 'true');
+    modalPanel.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (lastFocusedStation) lastFocusedStation.focus();
+  }
+
+  modalClose.addEventListener('click', closeModal);
+  returnBtn.addEventListener('click', closeModal);
+  modalOverlay.addEventListener('click', closeModal);
+
+  // Station landmark click
+  document.querySelectorAll('.station-landmark').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.stationIndex, 10);
+      openModal(idx);
+    });
+  });
+
+  // Keyboard: Escape closes
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalPanel.classList.contains('open')) {
+      closeModal();
+    }
+  });
+
+  // Focus trap inside modal
+  modalPanel.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab') return;
+    const focusable = modalPanel.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last  = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+
+  /* ================================================================
+     STARS GENERATOR (opening scene)
+  ================================================================ */
+  const starsContainer = document.getElementById('stars-container');
+  for (let i = 0; i < 80; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    const size = Math.random() * 2.5 + 1;
+    star.style.cssText = `
+      width: ${size}px; height: ${size}px;
+      top: ${Math.random() * 100}%;
+      left: ${Math.random() * 100}%;
+      --d: ${(Math.random() * 3 + 2).toFixed(1)}s;
+      --o: ${(Math.random() * 0.5 + 0.3).toFixed(2)};
+      animation-delay: ${(Math.random() * 4).toFixed(1)}s;
+    `;
+    starsContainer.appendChild(star);
+  }
+
+  /* ================================================================
+     VINE PLANTS GENERATOR (intro panel)
+  ================================================================ */
+  const introVineRow = document.getElementById('vines-intro');
+  if (introVineRow) {
+    introVineRow.innerHTML = Array.from({ length: 10 }, (_, i) => VINE_SVG(i)).join('');
+  }
+
+  /* ================================================================
+     KEYBOARD NAVIGATION: Arrow keys for vineyard scroll
+  ================================================================ */
+  document.addEventListener('keydown', (e) => {
+    if (modalPanel.classList.contains('open')) return;
+    if (e.key === 'ArrowRight') scrollToPanel(currentPanelIndex + 1);
+    if (e.key === 'ArrowLeft' && currentPanelIndex > 0) scrollToPanel(currentPanelIndex - 1);
+  });
+
+  /* ================================================================
+     RESPONSIVE: handle resize
+  ================================================================ */
+  window.addEventListener('resize', () => {
+    // Re-position grape on resize
+    moveGrape(currentPanelIndex);
+  });
+
+  /* ================================================================
+     MOBILE: listen to window scroll for vertical mode
+  ================================================================ */
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  </script>
+</body>
+</html>
