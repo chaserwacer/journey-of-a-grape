@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journey of a Grape: How Packaging Shapes Your Wine</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--burgundy:#5B2333;--amber:#D4A843;--sage:#7A8B6F;--cream:#F5ECD7;--charcoal:#2D2D2D;
+--grape:#6B3FA0;--grape-light:#8B5FC0;--grape-dark:#4B1F80;
+--leaf:#4A7A3F;--dirt:#8B7355;--dirt-light:#A89070;--sky:#C8D8E8;
+}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;background:#1a1a1a}
+canvas{display:none}
+
+/* ===== OPENING SCREEN ===== */
+#opening{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;
+background:linear-gradient(180deg,#2a1520 0%,#3d1f30 40%,#4a2838 70%,#1a1018 100%);
+transition:opacity 0.8s ease,transform 0.8s ease}
+#opening.hidden{opacity:0;pointer-events:none;transform:scale(1.05)}
+#opening::before{content:'';position:absolute;inset:0;
+background:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0v60M0 30h60' stroke='%23ffffff' stroke-width='0.3' opacity='0.04'/%3E%3C/svg%3E");
+opacity:0.5}
+.opening-vine{position:absolute;opacity:0.08}
+.opening-vine-left{left:-20px;top:10%;width:200px;height:80%;
+background:repeating-linear-gradient(180deg,transparent,transparent 40px,var(--sage) 40px,var(--sage) 42px)}
+.opening-vine-right{right:-20px;top:5%;width:200px;height:85%;
+background:repeating-linear-gradient(180deg,transparent,transparent 35px,var(--sage) 35px,var(--sage) 37px)}
+.title-container{text-align:center;z-index:1;animation:fadeUp 1.2s ease-out}
+.title-pre{font-family:'Lora',serif;font-size:clamp(0.9rem,2vw,1.1rem);color:var(--amber);letter-spacing:0.3em;text-transform:uppercase;margin-bottom:12px;opacity:0.8}
+.title-main{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,6vw,4.5rem);font-weight:900;color:var(--cream);line-height:1.1;margin-bottom:8px}
+.title-sub{font-family:'Playfair Display',serif;font-size:clamp(1rem,2.5vw,1.6rem);font-weight:400;font-style:italic;color:var(--amber);opacity:0.85;margin-bottom:40px}
+#grape-preview{margin:30px auto;width:80px;height:80px;position:relative;animation:grapeFloat 3s ease-in-out infinite}
+#grape-preview .body{width:80px;height:80px;background:radial-gradient(circle at 35% 35%,var(--grape-light),var(--grape),var(--grape-dark));border-radius:50%;position:relative;box-shadow:0 8px 25px rgba(107,63,160,0.4),inset 0 -3px 8px rgba(0,0,0,0.2)}
+#grape-preview .eye{position:absolute;width:8px;height:10px;background:#fff;border-radius:50%;top:32px}
+#grape-preview .eye::after{content:'';position:absolute;width:5px;height:5px;background:var(--charcoal);border-radius:50%;bottom:1px;left:50%;transform:translateX(-50%)}
+#grape-preview .eye-l{left:26px}
+#grape-preview .eye-r{left:44px}
+#grape-preview .mouth{position:absolute;width:14px;height:7px;border:2px solid var(--charcoal);border-top:none;border-radius:0 0 10px 10px;top:48px;left:33px}
+#grape-preview .leaf{position:absolute;top:-12px;left:34px;width:18px;height:14px;background:var(--leaf);border-radius:2px 50% 50% 50%;transform:rotate(-30deg);box-shadow:1px 1px 3px rgba(0,0,0,0.2)}
+#grape-preview .stem{position:absolute;top:-6px;left:39px;width:3px;height:10px;background:#5a3a2a;border-radius:1px}
+#start-btn{
+z-index:1;padding:16px 48px;font-family:'Lora',serif;font-size:1.1rem;
+background:linear-gradient(135deg,var(--burgundy),#7a2d44);color:var(--cream);
+border:1px solid rgba(212,168,67,0.3);border-radius:50px;cursor:pointer;
+letter-spacing:0.08em;transition:all 0.3s ease;position:relative;overflow:hidden;
+animation:fadeUp 1.2s ease-out 0.4s both}
+#start-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(91,35,51,0.5);border-color:var(--amber)}
+#start-btn::after{content:'';position:absolute;inset:-2px;border-radius:52px;
+background:linear-gradient(135deg,transparent,rgba(212,168,67,0.2),transparent);opacity:0;transition:opacity 0.3s}
+#start-btn:hover::after{opacity:1}
+.controls-hint{z-index:1;margin-top:28px;color:rgba(245,236,215,0.4);font-size:0.8rem;letter-spacing:0.1em;animation:fadeUp 1.2s ease-out 0.8s both}
+
+/* ===== GAME CONTAINER ===== */
+#game-container{position:fixed;inset:0;overflow:hidden;background:var(--sky);display:none}
+#game-container.active{display:block}
+#game-world{position:absolute;will-change:transform}
+
+/* ===== HUD ===== */
+#hud{position:fixed;top:16px;left:16px;z-index:100;display:flex;align-items:center;gap:12px}
+#hud-progress{font-family:'Lora',serif;font-size:0.85rem;color:var(--cream);
+background:rgba(45,45,45,0.85);padding:8px 16px;border-radius:20px;
+backdrop-filter:blur(8px);border:1px solid rgba(212,168,67,0.2);
+box-shadow:0 2px 12px rgba(0,0,0,0.3)}
+#hud-progress span{color:var(--amber);font-weight:700}
+#minimap{position:fixed;bottom:16px;right:16px;z-index:100;width:160px;height:120px;
+background:rgba(45,45,45,0.8);border-radius:12px;border:1px solid rgba(212,168,67,0.2);
+backdrop-filter:blur(8px);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.3)}
+#minimap canvas{width:100%;height:100%}
+
+/* ===== MOBILE CONTROLS ===== */
+#mobile-controls{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:100}
+.dpad{width:140px;height:140px;position:relative}
+.dpad-btn{position:absolute;width:44px;height:44px;background:rgba(45,45,45,0.8);
+border:1px solid rgba(212,168,67,0.3);border-radius:10px;display:flex;align-items:center;justify-content:center;
+color:var(--cream);font-size:1.2rem;cursor:pointer;touch-action:none;user-select:none;
+backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.dpad-btn:active{background:rgba(91,35,51,0.8)}
+.dpad-up{top:0;left:50%;transform:translateX(-50%)}
+.dpad-down{bottom:0;left:50%;transform:translateX(-50%)}
+.dpad-left{left:0;top:50%;transform:translateY(-50%)}
+.dpad-right{right:0;top:50%;transform:translateY(-50%)}
+.dpad-center{top:50%;left:50%;transform:translate(-50%,-50%);font-size:0.65rem;width:38px;height:38px;
+background:rgba(91,35,51,0.7);border-color:var(--amber)}
+
+/* ===== MODAL ===== */
+#modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(26,16,24,0.75);
+backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+opacity:0;pointer-events:none;transition:opacity 0.35s ease;display:flex;align-items:center;justify-content:center}
+#modal-overlay.active{opacity:1;pointer-events:auto}
+#modal{width:min(600px,92vw);max-height:85vh;overflow-y:auto;
+background:linear-gradient(170deg,var(--cream) 0%,#efe5d0 100%);
+border-radius:16px;padding:0;position:relative;
+transform:translateY(30px) scale(0.95);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+box-shadow:0 20px 60px rgba(0,0,0,0.4),0 0 0 1px rgba(212,168,67,0.2);
+scrollbar-width:thin;scrollbar-color:var(--burgundy) transparent}
+#modal-overlay.active #modal{transform:translateY(0) scale(1)}
+#modal::-webkit-scrollbar{width:6px}
+#modal::-webkit-scrollbar-thumb{background:var(--burgundy);border-radius:3px}
+.modal-header{padding:28px 32px 20px;position:relative;overflow:hidden;
+background:linear-gradient(135deg,var(--burgundy),#7a2d44);color:var(--cream)}
+.modal-header::after{content:'';position:absolute;inset:0;
+background:url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='1' fill='%23ffffff' opacity='0.06'/%3E%3C/svg%3E")}
+.modal-header h2{font-family:'Playfair Display',serif;font-size:clamp(1.4rem,3.5vw,1.8rem);font-weight:900;position:relative;z-index:1}
+.modal-header .station-num{font-family:'DM Sans',sans-serif;font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;opacity:0.7;margin-bottom:4px;position:relative;z-index:1}
+.modal-body{padding:24px 32px 32px}
+.modal-section{margin-bottom:20px}
+.modal-section h3{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--burgundy);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.modal-section h3 .icon{font-size:1.1rem}
+.modal-section p{font-family:'Lora',serif;font-size:0.92rem;line-height:1.65;color:var(--charcoal);opacity:0.85}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-top:8px}
+.stat-card{background:rgba(91,35,51,0.06);border:1px solid rgba(91,35,51,0.1);border-radius:10px;padding:14px 12px;text-align:center}
+.stat-num{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--burgundy)}
+.stat-label{font-size:0.72rem;color:var(--charcoal);opacity:0.6;margin-top:2px;line-height:1.3}
+.sustainability{display:flex;align-items:center;gap:8px;margin-top:6px}
+.sustainability .dots{display:flex;gap:4px}
+.sustainability .dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--sage);transition:all 0.3s}
+.sustainability .dot.filled{background:var(--sage);box-shadow:0 0 6px rgba(122,139,111,0.4)}
+.flavor-quote{font-family:'Playfair Display',serif;font-style:italic;font-size:1rem;color:var(--burgundy);
+padding:12px 16px;border-left:3px solid var(--amber);background:rgba(212,168,67,0.08);border-radius:0 8px 8px 0}
+#modal-close{position:absolute;top:16px;right:16px;width:36px;height:36px;
+background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);
+border-radius:50%;color:var(--cream);font-size:1.2rem;cursor:pointer;
+display:flex;align-items:center;justify-content:center;z-index:2;transition:all 0.2s}
+#modal-close:hover{background:rgba(255,255,255,0.25);transform:rotate(90deg)}
+
+/* ===== INTERACT PROMPT ===== */
+#interact-prompt{position:fixed;bottom:25%;left:50%;transform:translateX(-50%) translateY(10px);
+z-index:90;background:rgba(45,45,45,0.9);color:var(--cream);padding:10px 22px;
+border-radius:20px;font-family:'Lora',serif;font-size:0.85rem;
+border:1px solid rgba(212,168,67,0.3);opacity:0;pointer-events:none;
+transition:all 0.3s ease;backdrop-filter:blur(6px)}
+#interact-prompt.visible{opacity:1;transform:translateX(-50%) translateY(0)}
+#interact-prompt kbd{background:rgba(212,168,67,0.2);padding:2px 8px;border-radius:4px;
+font-family:'DM Sans',sans-serif;font-size:0.8rem;border:1px solid rgba(212,168,67,0.3)}
+
+/* ===== ANIMATIONS ===== */
+@keyframes grapeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:0.6}50%{transform:scale(1.15);opacity:1}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+#mobile-controls{display:block}
+#minimap{width:120px;height:90px;bottom:170px}
+#hud{top:8px;left:8px}
+.modal-body{padding:20px 24px 28px}
+.modal-header{padding:24px 24px 16px}
+}
+@media(max-width:480px){
+.stats-grid{grid-template-columns:1fr 1fr}
+}
+
+#game-footer{position:fixed;bottom:0;left:0;right:0;z-index:80;text-align:center;
+font-family:'Lora',serif;font-size:0.7rem;color:rgba(245,236,215,0.4);
+padding:8px 16px;background:linear-gradient(transparent,rgba(26,16,24,0.6));
+pointer-events:none}
+
+#completion-banner{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:150;
+transition:all 0.6s cubic-bezier(0.34,1.56,0.64,1)}
+#completion-banner.hidden-banner{opacity:0;transform:translateX(-50%) translateY(-30px);pointer-events:none}
+#completion-banner.show-banner{opacity:1;transform:translateX(-50%) translateY(0)}
+.completion-inner{background:linear-gradient(135deg,var(--burgundy),#7a2d44);color:var(--cream);
+padding:14px 28px;border-radius:16px;font-family:'Lora',serif;font-size:0.95rem;
+border:1px solid rgba(212,168,67,0.3);box-shadow:0 8px 30px rgba(0,0,0,0.4);
+display:flex;align-items:center;gap:10px;white-space:nowrap}
+.completion-icon{font-size:1.3rem}
+</style>
+</head>
+<body>
+
+<!-- OPENING SCREEN -->
+<div id="opening" role="dialog" aria-label="Journey of a Grape - Welcome">
+<div class="opening-vine opening-vine-left"></div>
+<div class="opening-vine opening-vine-right"></div>
+<div class="title-container">
+<div class="title-pre">A Wines of the World Experience</div>
+<div id="grape-preview">
+<div class="body">
+<div class="eye eye-l"></div>
+<div class="eye eye-r"></div>
+<div class="mouth"></div>
+</div>
+<div class="stem"></div>
+<div class="leaf"></div>
+</div>
+<h1 class="title-main">Journey of a Grape</h1>
+<div class="title-sub">How Packaging Shapes Your Wine</div>
+</div>
+<button id="start-btn" aria-label="Begin your journey">Begin Your Journey</button>
+<div class="controls-hint">Arrow keys or WASD to move · Space or E to interact</div>
+</div>
+
+<!-- GAME -->
+<div id="game-container" aria-label="Vineyard maze exploration">
+<canvas id="game-canvas"></canvas>
+<div id="hud"><div id="hud-progress">Stations discovered: <span id="progress-count">0</span> / 9</div></div>
+<div id="minimap"><canvas id="minimap-canvas" width="160" height="120"></canvas></div>
+<div id="interact-prompt"><kbd>E</kbd> or <kbd>Space</kbd> to explore</div>
+<div id="mobile-controls">
+<div class="dpad">
+<button class="dpad-btn dpad-up" data-dir="up" aria-label="Move up">▲</button>
+<button class="dpad-btn dpad-down" data-dir="down" aria-label="Move down">▼</button>
+<button class="dpad-btn dpad-left" data-dir="left" aria-label="Move left">◄</button>
+<button class="dpad-btn dpad-right" data-dir="right" aria-label="Move right">►</button>
+<button class="dpad-btn dpad-center" data-dir="interact" aria-label="Interact">ACT</button>
+</div>
+</div>
+<div id="game-footer">
+Wines of the World · University Project · Data sourced from industry publications and sustainability reports
+</div>
+<div id="completion-banner" class="hidden-banner">
+<div class="completion-inner">
+<span class="completion-icon">🍇</span>
+<strong>Journey Complete!</strong> You've explored all 9 packaging methods.
+</div>
+</div>
+</div>
+
+<!-- MODAL -->
+<div id="modal-overlay" role="dialog" aria-modal="true" aria-label="Station information">
+<div id="modal">
+<div class="modal-header">
+<div class="station-num" id="modal-station-num"></div>
+<h2 id="modal-title"></h2>
+<button id="modal-close" aria-label="Close panel">✕</button>
+</div>
+<div class="modal-body" id="modal-body"></div>
+</div>
+</div>
+
+<script>
+// ===== STATION DATA =====
+const STATIONS = [
+{id:0,name:"Natural Cork",x:6,y:3,
+icon:"🌳",color:"#8B6B4A",
+good:"Natural cork has sealed wine bottles for over 400 years, creating a proven, time-tested closure. Its cellular structure allows micro-amounts of oxygen to enter, helping wines develop complex flavors during aging. Cork is harvested from living trees without harming them, making it a renewable resource.",
+tricky:"About 1–3% of bottles sealed with natural cork suffer from 'cork taint' (TCA), which can mute flavors or produce a musty smell. Quality varies between corks, and premium corks come at a higher cost. They also require bottles to be stored on their sides to keep the cork moist.",
+stats:[{n:"400+",l:"Years in use"},{n:"1-3%",l:"TCA failure rate"},{n:"$0.15–$1.50",l:"Per cork cost"},{n:"50 yrs",l:"Tree harvest cycle"}],
+flavor:"Natural cork's slow oxygen exchange lets tannic reds soften and develop layered complexity over decades.",
+sustScore:5,sustNote:"Fully biodegradable and harvested from living cork oak forests that support rich ecosystems."},
+
+{id:1,name:"Synthetic Cork",x:18,y:5,
+icon:"🔬",color:"#7A9EAF",
+good:"Synthetic corks eliminate the risk of cork taint entirely, offering a consistent seal every time. They're easier to extract and re-insert than natural corks, and they maintain a familiar opening ritual for wine drinkers. Production costs are predictable and lower than premium natural cork.",
+tricky:"Most synthetic corks are made from petroleum-based plastics, raising environmental concerns. They don't allow the same micro-oxygenation as natural cork, making them less ideal for long-term aging. Over time, they can become difficult to remove as they bond with the bottle neck.",
+stats:[{n:"0%",l:"TCA taint risk"},{n:"$0.05–$0.15",l:"Per cork cost"},{n:"2-3 yrs",l:"Ideal seal window"},{n:"1990s",l:"Commercial debut"}],
+flavor:"Wines sealed with synthetic cork taste best young and fresh — think vibrant whites and rosés meant to be enjoyed soon.",
+sustScore:2,sustNote:"Petroleum-derived plastics with limited recyclability; some newer plant-based versions are emerging."},
+
+{id:2,name:"Screw Cap (Stelvin)",x:28,y:8,
+icon:"🔩",color:"#B0B0B0",
+good:"Screw caps provide an airtight, perfectly consistent seal that virtually eliminates oxidation and cork taint. They're the easiest closure to open — no corkscrew needed. Australia and New Zealand have proven they work beautifully even for premium wines.",
+tricky:"Many consumers still associate screw caps with cheap wine, creating a perception barrier for premium bottles. The aluminum requires mining and significant energy to produce. Some winemakers argue that zero oxygen transfer prevents beneficial aging evolution.",
+stats:[{n:"<0.5%",l:"Failure rate"},{n:"$0.03–$0.10",l:"Per cap cost"},{n:"90%+",l:"NZ wines use them"},{n:"2001",l:"Major adoption year"}],
+flavor:"Screw caps lock in bright, primary fruit characteristics — your Sauvignon Blanc stays crisp and zingy as intended.",
+sustScore:3,sustNote:"Aluminum is infinitely recyclable, but the liner is often non-recyclable. Mining has environmental costs."},
+
+{id:3,name:"Glass Seal (Vino-Lok)",x:10,y:14,
+icon:"💎",color:"#A8D8EA",
+good:"Vino-Lok uses a glass stopper with an inert O-ring, creating a chemically neutral, elegant seal. It offers zero risk of cork taint and provides a beautiful, premium presentation. The closure is reusable and gives a satisfying 'pop' when opened.",
+tricky:"Glass stoppers cost significantly more than other closures, typically reserved for premium wines. They require a special bottle-mouth design, limiting producer flexibility. Despite their elegance, many markets are unfamiliar with this closure type.",
+stats:[{n:"$0.50–$1.00",l:"Per seal cost"},{n:"0%",l:"Taint risk"},{n:"2003",l:"Introduced by Alcoa"},{n:"100%",l:"Reusable closure"}],
+flavor:"The inert glass seal preserves delicate aromatic whites with crystalline purity — every nuance stays intact.",
+sustScore:4,sustNote:"Glass is endlessly recyclable and chemically inert; higher energy cost for production, but long lifespan offsets it."},
+
+{id:4,name:"Bag-in-Box",x:24,y:16,
+icon:"📦",color:"#C4956A",
+good:"Bag-in-Box packaging keeps wine fresh for 4–6 weeks after opening, thanks to its collapsible bladder that prevents air contact. It's dramatically lighter than glass, reducing shipping emissions by up to 40%. The format is perfect for everyday wines and entertaining.",
+tricky:"The plastic bladder and cardboard box create mixed-material recycling challenges. Wine stored in bag-in-box has a shorter overall shelf life (about 8–12 months). The format still carries a stigma of low quality in many wine cultures despite improving offerings.",
+stats:[{n:"40%",l:"Less CO₂ in transit"},{n:"4-6 wks",l:"Fresh after opening"},{n:"3L/5L",l:"Common sizes"},{n:"1965",l:"Patented in Australia"}],
+flavor:"Bag-in-Box excels at keeping everyday wines — fruity reds, crisp whites — tasting fresh glass after glass.",
+sustScore:3,sustNote:"Lower transport footprint is a big win; mixed materials make recycling harder. Newer versions use recyclable pouches."},
+
+{id:5,name:"Tetra Pak / Carton",x:4,y:18,
+icon:"🧃",color:"#7DB87D",
+good:"Tetra Pak cartons are incredibly lightweight, stackable, and use roughly 1/3 the carbon footprint of glass bottles in transport. They're shatterproof and convenient for outdoor events, picnics, and travel. Modern carton wines have seen a quality revolution in recent years.",
+tricky:"Cartons are made of layered paper, plastic, and aluminum — making them difficult to recycle in most areas. They aren't suitable for wines meant for aging. The format struggles against perception bias, as many consumers equate cartons with juice boxes.",
+stats:[{n:"68%",l:"Lighter than glass"},{n:"1/3",l:"Carbon vs. bottle"},{n:"~12 mo",l:"Optimal shelf life"},{n:"500mL-1L",l:"Common sizes"}],
+flavor:"Carton wines showcase vibrant, drink-now styles — perfect for that fresh rosé at a summer picnic.",
+sustScore:3,sustNote:"Excellent transport efficiency; recycling infrastructure for layered cartons is limited but growing."},
+
+{id:6,name:"Aluminum Can",x:16,y:20,
+icon:"🥫",color:"#D4D4D4",
+good:"Canned wine is the most portable, single-serve format available — chill it, crack it, enjoy it anywhere. Aluminum is infinitely recyclable with the highest actual recycling rate of any packaging material. Cans chill faster than bottles and eliminate the need for a glass.",
+tricky:"Wine in cans may interact with the aluminum lining over time, affecting flavor in sensitive wines. The single-serve format limits it to casual contexts and younger demographics. Shelf life is shorter than bottled wine at around 12–18 months.",
+stats:[{n:"73%",l:"Can recycling rate (US)"},{n:"250mL",l:"Standard pour"},{n:"$5-10",l:"Typical 4-pack"},{n:"2004",l:"First canned wine launched"}],
+flavor:"Canned wines shine as bright, refreshing sippers — think sparkling, rosé, and crisp whites served ice-cold.",
+sustScore:4,sustNote:"Aluminum has the best real-world recycling loop of any packaging; energy-intensive to produce from raw ore."},
+
+{id:7,name:"PET Plastic Bottle",x:30,y:13,
+icon:"🧴",color:"#F0C987",
+good:"PET bottles weigh about 1/6th of glass, dramatically cutting shipping weight and fuel costs. They're shatterproof, making them ideal for poolside, outdoor venues, and airlines. The material is widely recyclable in most municipal programs worldwide.",
+tricky:"PET is slightly permeable to oxygen, limiting shelf life to 12–18 months maximum. Plastic perception is a growing issue as consumers become more eco-conscious. Heat and UV light can degrade both the container and the wine inside.",
+stats:[{n:"83%",l:"Lighter than glass"},{n:"12-18 mo",l:"Shelf life"},{n:"#1 PETE",l:"Recycle code"},{n:"1 billion+",l:"Bottles used/yr for wine"}],
+flavor:"PET works well for light, easy-drinking wines — simple whites and rosés meant to be enjoyed promptly.",
+sustScore:2,sustNote:"Widely recyclable but derived from petroleum; contributes to microplastic pollution when not properly recycled."},
+
+{id:8,name:"Kegged / On-Tap",x:22,y:3,
+icon:"🍺",color:"#B8860B",
+good:"Kegged wine eliminates individual packaging waste entirely — one keg replaces approximately 26 bottles. The closed stainless-steel system preserves wine under inert gas, keeping it fresh for weeks. It reduces restaurant storage needs and speeds up service dramatically.",
+tricky:"Requires specialized equipment (keg lines, CO₂/nitrogen systems) that not every venue can install. Consumer perception still associates kegs with beer rather than quality wine. Distribution is limited, and the system works best for high-volume pours.",
+stats:[{n:"26",l:"Bottles per keg"},{n:"96%",l:"Less packaging waste"},{n:"$0",l:"Closure cost per serve"},{n:"3-4 wks",l:"Fresh after tapping"}],
+flavor:"On-tap wine arrives at your glass exactly as the winemaker intended — pristine, temperature-controlled, and lively.",
+sustScore:5,sustNote:"Reusable stainless steel kegs are the gold standard for zero-waste wine service."}
+];
+
+// ===== MAZE / WORLD =====
+// Grid-based world: 0=path, 1=vine row, 2=station (set dynamically)
+const COLS=36, ROWS=24, TILE=48;
+const WORLD_W=COLS*TILE, WORLD_H=ROWS*TILE;
+
+// Generate maze layout - 1 = vine/wall
+const grid=[];
+for(let r=0;r<ROWS;r++){grid[r]=[];for(let c=0;c<COLS;c++){grid[r][c]=0;}}
+
+// Create vine rows (walls) with organic paths
+function buildMaze(){
+// Border walls
+for(let c=0;c<COLS;c++){grid[0][c]=1;grid[ROWS-1][c]=1;}
+for(let r=0;r<ROWS;r++){grid[r][0]=1;grid[r][COLS-1]=1;}
+
+// Vine row patterns - create horizontal and vertical vine rows with gaps
+// Horizontal vine rows
+const hRows=[2,4,7,9,11,13,15,17,19,21];
+hRows.forEach(r=>{
+if(r>=ROWS-1)return;
+for(let c=2;c<COLS-2;c++){
+grid[r][c]=1;
+}
+// Create gaps
+const gaps=[];
+const numGaps=3+Math.floor(Math.random()*3);
+for(let g=0;g<numGaps;g++){
+const gc=3+Math.floor(Math.random()*(COLS-7));
+gaps.push(gc);
+}
+gaps.forEach(gc=>{
+for(let d=-1;d<=1;d++){
+const cc=gc+d;
+if(cc>=1&&cc<COLS-1)grid[r][cc]=0;
+}
+});
+});
+
+// Vertical vine segments
+const vCols=[5,9,13,17,21,25,29,33];
+vCols.forEach(c=>{
+if(c>=COLS-1)return;
+for(let r=1;r<ROWS-1;r++){
+if(grid[r][c]===0&&Math.random()<0.35){
+grid[r][c]=1;
+}
+}
+});
+
+// Ensure station tiles are clear
+STATIONS.forEach(s=>{
+for(let dr=-1;dr<=1;dr++){
+for(let dc=-1;dc<=1;dc++){
+const rr=s.y+dr,cc=s.x+dc;
+if(rr>=0&&rr<ROWS&&cc>=0&&cc<COLS)grid[rr][cc]=0;
+}}
+});
+
+// Ensure start area is clear
+for(let dr=-1;dr<=2;dr++){
+for(let dc=-2;dc<=2;dc++){
+const rr=1+dr,cc=Math.floor(COLS/2)+dc;
+if(rr>=0&&rr<ROWS&&cc>=0&&cc<COLS)grid[rr][cc]=0;
+}}
+
+// Flood fill from start to ensure connectivity, carve paths if needed
+ensureConnectivity();
+}
+
+function ensureConnectivity(){
+const visited=Array.from({length:ROWS},()=>Array(COLS).fill(false));
+const startR=2,startC=Math.floor(COLS/2);
+const queue=[[startR,startC]];
+visited[startR][startC]=true;
+while(queue.length){
+const[r,c]=queue.shift();
+[[0,1],[0,-1],[1,0],[-1,0]].forEach(([dr,dc])=>{
+const nr=r+dr,nc=c+dc;
+if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&!visited[nr][nc]&&grid[nr][nc]===0){
+visited[nr][nc]=true;
+queue.push([nr,nc]);
+}
+});
+}
+// For each station, if not reachable, carve a path
+STATIONS.forEach(s=>{
+if(!visited[s.y][s.x]){
+// BFS from station to nearest visited cell, carving walls
+let carvePath=[[s.y,s.x]];
+let found=false;
+const cVisited=Array.from({length:ROWS},()=>Array(COLS).fill(false));
+const parent=Array.from({length:ROWS},()=>Array(COLS).fill(null));
+cVisited[s.y][s.x]=true;
+const q=[[s.y,s.x]];
+while(q.length&&!found){
+const[cr,cc]=q.shift();
+[[0,1],[0,-1],[1,0],[-1,0]].forEach(([dr,dc])=>{
+const nr=cr+dr,nc=cc+dc;
+if(nr>0&&nr<ROWS-1&&nc>0&&nc<COLS-1&&!cVisited[nr][nc]){
+cVisited[nr][nc]=true;
+parent[nr][nc]=[cr,cc];
+if(visited[nr][nc]){found=true;
+// Trace back and carve
+let cur=[nr,nc];
+while(cur){
+grid[cur[0]][cur[1]]=0;
+visited[cur[0]][cur[1]]=true;
+cur=parent[cur[0]][cur[1]];
+}
+}
+q.push([nr,nc]);
+}
+});
+}
+}
+});
+}
+
+buildMaze();
+
+// ===== GAME STATE =====
+const state={
+grapeX:Math.floor(COLS/2)*TILE+TILE/2,
+grapeY:2*TILE+TILE/2,
+velX:0,velY:0,
+facing:'down',
+moving:false,
+nearStation:null,
+discovered:new Set(),
+modalOpen:false,
+squash:1,stretch:1,
+bobPhase:0
+};
+
+const keys={};
+let animFrame;
+const SPEED=3.2;
+const GRAPE_R=16;
+
+// ===== CANVAS SETUP =====
+const canvas=document.getElementById('game-canvas');
+const ctx=canvas.getContext('2d');
+const mmCanvas=document.getElementById('minimap-canvas');
+const mmCtx=mmCanvas.getContext('2d');
+
+function resize(){
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+canvas.style.display='block';
+}
+window.addEventListener('resize',resize);
+
+// ===== DRAWING =====
+function worldToScreen(wx,wy){
+const sx=wx-state.grapeX+canvas.width/2;
+const sy=wy-state.grapeY+canvas.height/2;
+return[sx,sy];
+}
+
+function drawWorld(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+// Compute visible area
+const camX=state.grapeX-canvas.width/2;
+const camY=state.grapeY-canvas.height/2;
+const startC=Math.max(0,Math.floor(camX/TILE)-1);
+const endC=Math.min(COLS,Math.ceil((camX+canvas.width)/TILE)+1);
+const startR=Math.max(0,Math.floor(camY/TILE)-1);
+const endR=Math.min(ROWS,Math.ceil((camY+canvas.height)/TILE)+1);
+
+// Sky background
+const skyGrad=ctx.createLinearGradient(0,0,0,canvas.height);
+skyGrad.addColorStop(0,'#87ADCF');
+skyGrad.addColorStop(0.4,'#C8D8E8');
+skyGrad.addColorStop(1,'#E8DCC8');
+ctx.fillStyle=skyGrad;
+ctx.fillRect(0,0,canvas.width,canvas.height);
+
+// Distant hills
+const[hx,hy]=worldToScreen(0,0);
+drawHills(hx,hy);
+
+// Draw tiles
+for(let r=startR;r<endR;r++){
+for(let c=startC;c<endC;c++){
+const[sx,sy]=worldToScreen(c*TILE,r*TILE);
+if(grid[r][c]===1){
+drawVineTile(sx,sy,r,c);
+}else{
+drawPathTile(sx,sy,r,c);
+}
+}}
+
+// Draw stations
+STATIONS.forEach((s,i)=>{
+const[sx,sy]=worldToScreen(s.x*TILE,s.y*TILE);
+drawStation(sx,sy,s,i);
+});
+
+// Draw grape
+drawGrape();
+
+// Grain overlay
+drawGrain();
+}
+
+function drawHills(offsetX,offsetY){
+const w=canvas.width;
+// Far hills
+ctx.fillStyle='#8BA882';
+ctx.beginPath();
+ctx.moveTo(0,canvas.height*0.4+offsetY*0.02);
+for(let x=0;x<=w;x+=20){
+ctx.lineTo(x,canvas.height*0.35+Math.sin(x*0.005+1)*40+Math.sin(x*0.012)*20+offsetY*0.02);
+}
+ctx.lineTo(w,canvas.height);ctx.lineTo(0,canvas.height);ctx.fill();
+
+// Near hills
+ctx.fillStyle='#7A9B6F';
+ctx.beginPath();
+ctx.moveTo(0,canvas.height*0.45+offsetY*0.03);
+for(let x=0;x<=w;x+=20){
+ctx.lineTo(x,canvas.height*0.42+Math.sin(x*0.008+3)*30+Math.sin(x*0.015)*15+offsetY*0.03);
+}
+ctx.lineTo(w,canvas.height);ctx.lineTo(0,canvas.height);ctx.fill();
+}
+
+function drawPathTile(sx,sy,r,c){
+// Dirt path
+ctx.fillStyle='#C4AD8A';
+ctx.fillRect(sx,sy,TILE,TILE);
+// Subtle variation
+const v=((r*7+c*13)%5)*3;
+ctx.fillStyle=`rgba(160,130,90,${0.05+v*0.01})`;
+ctx.fillRect(sx,sy,TILE,TILE);
+// Tiny pebbles
+if((r+c)%3===0){
+ctx.fillStyle='rgba(100,80,60,0.15)';
+ctx.beginPath();
+ctx.arc(sx+12+v,sy+20+v*0.5,2,0,Math.PI*2);
+ctx.fill();
+}
+}
+
+function drawVineTile(sx,sy,r,c){
+// Green vine base
+ctx.fillStyle='#5A7A4F';
+ctx.fillRect(sx,sy,TILE,TILE);
+// Darker variation
+ctx.fillStyle=`rgba(40,60,30,${0.1+((r*3+c*7)%4)*0.05})`;
+ctx.fillRect(sx,sy,TILE,TILE);
+
+// Trellis post
+if(c%3===0){
+ctx.fillStyle='#6B5030';
+ctx.fillRect(sx+TILE/2-2,sy,4,TILE);
+// Wire
+ctx.strokeStyle='rgba(150,150,150,0.4)';
+ctx.lineWidth=1;
+ctx.beginPath();
+ctx.moveTo(sx,sy+TILE*0.3);ctx.lineTo(sx+TILE,sy+TILE*0.3);
+ctx.moveTo(sx,sy+TILE*0.6);ctx.lineTo(sx+TILE,sy+TILE*0.6);
+ctx.stroke();
+}
+
+// Grape clusters on vines
+if((r+c)%4===0){
+ctx.fillStyle='rgba(90,30,70,0.4)';
+ctx.beginPath();
+ctx.arc(sx+15,sy+TILE*0.4,5,0,Math.PI*2);
+ctx.arc(sx+20,sy+TILE*0.45,4,0,Math.PI*2);
+ctx.arc(sx+12,sy+TILE*0.48,4,0,Math.PI*2);
+ctx.fill();
+}
+
+// Leaves
+ctx.fillStyle='rgba(80,120,60,0.5)';
+if((r*5+c)%3===0){
+ctx.beginPath();
+ctx.ellipse(sx+30,sy+15,7,5,0.5,0,Math.PI*2);
+ctx.fill();
+}
+}
+
+function drawStation(sx,sy,station,idx){
+const isNear=state.nearStation===idx;
+const discovered=state.discovered.has(idx);
+const t=Date.now()*0.002;
+
+// Glow if near
+if(isNear){
+const glowR=35+Math.sin(t*2)*5;
+ctx.fillStyle='rgba(212,168,67,0.15)';
+ctx.beginPath();ctx.arc(sx+TILE/2,sy+TILE/2,glowR,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='rgba(212,168,67,0.08)';
+ctx.beginPath();ctx.arc(sx+TILE/2,sy+TILE/2,glowR+12,0,Math.PI*2);ctx.fill();
+}
+
+// Platform
+ctx.fillStyle=discovered?'rgba(212,168,67,0.3)':'rgba(180,160,130,0.4)';
+ctx.beginPath();
+ctx.ellipse(sx+TILE/2,sy+TILE-4,22,8,0,0,Math.PI*2);
+ctx.fill();
+
+// Station icon base
+ctx.fillStyle=station.color;
+const bob=isNear?Math.sin(t*3)*3:0;
+ctx.beginPath();
+ctx.roundRect(sx+8,sy+6+bob,TILE-16,TILE-16,6);
+ctx.fill();
+
+// Border
+ctx.strokeStyle=discovered?'#D4A843':'rgba(255,255,255,0.3)';
+ctx.lineWidth=discovered?2:1;
+ctx.stroke();
+
+// Icon
+ctx.font='20px serif';
+ctx.textAlign='center';
+ctx.textBaseline='middle';
+ctx.fillText(station.icon,sx+TILE/2,sy+TILE/2+bob);
+
+// Checkmark if discovered
+if(discovered){
+ctx.fillStyle='#D4A843';
+ctx.font='bold 12px sans-serif';
+ctx.fillText('✓',sx+TILE-8,sy+12);
+}
+}
+
+function drawGrape(){
+const cx=canvas.width/2;
+const cy=canvas.height/2;
+const t=Date.now()*0.003;
+const bob=state.moving?0:Math.sin(t)*3;
+const sq=state.moving?0.92+Math.sin(t*4)*0.04:1;
+const st=state.moving?1.08-Math.sin(t*4)*0.04:1;
+
+ctx.save();
+ctx.translate(cx,cy+bob);
+ctx.scale(sq,st);
+
+// Shadow
+ctx.fillStyle='rgba(0,0,0,0.15)';
+ctx.beginPath();
+ctx.ellipse(0,GRAPE_R+2,GRAPE_R*0.8,4,0,0,Math.PI*2);
+ctx.fill();
+
+// Body
+const bodyGrad=ctx.createRadialGradient(-4,-4,2,0,0,GRAPE_R);
+bodyGrad.addColorStop(0,'#9B6FD0');
+bodyGrad.addColorStop(0.5,'#6B3FA0');
+bodyGrad.addColorStop(1,'#4B1F80');
+ctx.fillStyle=bodyGrad;
+ctx.beginPath();
+ctx.arc(0,0,GRAPE_R,0,Math.PI*2);
+ctx.fill();
+
+// Shine
+ctx.fillStyle='rgba(255,255,255,0.2)';
+ctx.beginPath();
+ctx.ellipse(-5,-6,6,4,-0.3,0,Math.PI*2);
+ctx.fill();
+
+// Stem
+ctx.fillStyle='#5A3A2A';
+ctx.fillRect(-1.5,-GRAPE_R-5,3,7);
+
+// Leaf
+ctx.fillStyle='#4A7A3F';
+ctx.save();
+ctx.translate(2,-GRAPE_R-3);
+ctx.rotate(-0.5);
+ctx.beginPath();
+ctx.ellipse(0,0,8,5,0,0,Math.PI*2);
+ctx.fill();
+// Leaf vein
+ctx.strokeStyle='rgba(30,60,20,0.4)';
+ctx.lineWidth=0.8;
+ctx.beginPath();ctx.moveTo(-6,0);ctx.lineTo(6,0);ctx.stroke();
+ctx.restore();
+
+// Eyes
+const eyeOffX=state.facing==='left'?-2:state.facing==='right'?2:0;
+const eyeOffY=state.facing==='up'?-2:state.facing==='down'?1:0;
+// Whites
+ctx.fillStyle='#FFF';
+ctx.beginPath();ctx.ellipse(-5+eyeOffX*0.3,-3,4,5,0,0,Math.PI*2);ctx.fill();
+ctx.beginPath();ctx.ellipse(5+eyeOffX*0.3,-3,4,5,0,0,Math.PI*2);ctx.fill();
+// Pupils
+ctx.fillStyle='#2D2D2D';
+ctx.beginPath();ctx.arc(-5+eyeOffX,-3+eyeOffY,2.5,0,Math.PI*2);ctx.fill();
+ctx.beginPath();ctx.arc(5+eyeOffX,-3+eyeOffY,2.5,0,Math.PI*2);ctx.fill();
+
+// Mouth
+ctx.strokeStyle='#2D2D2D';
+ctx.lineWidth=1.5;
+ctx.lineCap='round';
+ctx.beginPath();
+if(state.nearStation!==null){
+// Excited - open mouth
+ctx.arc(0,4,4,0,Math.PI);
+}else{
+// Gentle smile
+ctx.arc(0,3,5,0.2,Math.PI-0.2);
+}
+ctx.stroke();
+
+// Blush
+ctx.fillStyle='rgba(200,100,120,0.2)';
+ctx.beginPath();ctx.ellipse(-9,3,3,2,0,0,Math.PI*2);ctx.fill();
+ctx.beginPath();ctx.ellipse(9,3,3,2,0,0,Math.PI*2);ctx.fill();
+
+ctx.restore();
+}
+
+function drawGrain(){
+// Subtle noise overlay
+ctx.fillStyle='rgba(245,236,215,0.03)';
+const t=Date.now();
+for(let i=0;i<80;i++){
+const x=((i*137+t*0.01)%canvas.width);
+const y=((i*251+t*0.007)%canvas.height);
+ctx.fillRect(x,y,2,2);
+}
+}
+
+function drawMinimap(){
+mmCtx.clearRect(0,0,160,120);
+const sx=160/WORLD_W,sy=120/WORLD_H;
+
+// Background
+mmCtx.fillStyle='rgba(196,173,138,0.6)';
+mmCtx.fillRect(0,0,160,120);
+
+// Walls
+mmCtx.fillStyle='rgba(70,100,50,0.7)';
+for(let r=0;r<ROWS;r++){
+for(let c=0;c<COLS;c++){
+if(grid[r][c]===1){
+mmCtx.fillRect(c*TILE*sx,r*TILE*sy,TILE*sx+1,TILE*sy+1);
+}}}
+
+// Stations
+STATIONS.forEach((s,i)=>{
+mmCtx.fillStyle=state.discovered.has(i)?'#D4A843':'rgba(180,150,100,0.6)';
+mmCtx.beginPath();
+mmCtx.arc(s.x*TILE*sx+TILE*sx/2,s.y*TILE*sy+TILE*sy/2,3,0,Math.PI*2);
+mmCtx.fill();
+});
+
+// Player
+mmCtx.fillStyle='#6B3FA0';
+mmCtx.beginPath();
+mmCtx.arc(state.grapeX*sx,state.grapeY*sy,4,0,Math.PI*2);
+mmCtx.fill();
+mmCtx.strokeStyle='#FFF';
+mmCtx.lineWidth=1;
+mmCtx.stroke();
+}
+
+// ===== COLLISION =====
+function canMove(nx,ny){
+// Check grid cells that the grape would overlap
+const r1=Math.floor((ny-GRAPE_R)/TILE);
+const r2=Math.floor((ny+GRAPE_R)/TILE);
+const c1=Math.floor((nx-GRAPE_R)/TILE);
+const c2=Math.floor((nx+GRAPE_R)/TILE);
+for(let r=r1;r<=r2;r++){
+for(let c=c1;c<=c2;c++){
+if(r<0||r>=ROWS||c<0||c>=COLS||grid[r][c]===1)return false;
+}}
+return true;
+}
+
+// ===== GAME LOOP =====
+function update(){
+if(state.modalOpen)return;
+
+let dx=0,dy=0;
+if(keys['ArrowUp']||keys['KeyW']||keys['up'])dy=-1;
+if(keys['ArrowDown']||keys['KeyS']||keys['down'])dy=1;
+if(keys['ArrowLeft']||keys['KeyA']||keys['left'])dx=-1;
+if(keys['ArrowRight']||keys['KeyD']||keys['right'])dx=1;
+
+// Normalize diagonal
+if(dx&&dy){dx*=0.707;dy*=0.707;}
+
+state.moving=dx!==0||dy!==0;
+if(dx<0)state.facing='left';
+else if(dx>0)state.facing='right';
+if(dy<0)state.facing='up';
+else if(dy>0)state.facing='down';
+
+const nx=state.grapeX+dx*SPEED;
+const ny=state.grapeY+dy*SPEED;
+if(canMove(nx,state.grapeY))state.grapeX=nx;
+if(canMove(state.grapeX,ny))state.grapeY=ny;
+
+// Clamp
+state.grapeX=Math.max(TILE+GRAPE_R,Math.min(WORLD_W-TILE-GRAPE_R,state.grapeX));
+state.grapeY=Math.max(TILE+GRAPE_R,Math.min(WORLD_H-TILE-GRAPE_R,state.grapeY));
+
+// Check station proximity
+state.nearStation=null;
+const prompt=document.getElementById('interact-prompt');
+STATIONS.forEach((s,i)=>{
+const scx=s.x*TILE+TILE/2;
+const scy=s.y*TILE+TILE/2;
+const dist=Math.hypot(state.grapeX-scx,state.grapeY-scy);
+if(dist<TILE*1.5){
+state.nearStation=i;
+}
+});
+if(state.nearStation!==null){
+prompt.classList.add('visible');
+}else{
+prompt.classList.remove('visible');
+}
+}
+
+function gameLoop(){
+update();
+drawWorld();
+drawMinimap();
+animFrame=requestAnimationFrame(gameLoop);
+}
+
+// ===== MODAL =====
+function openModal(idx){
+const s=STATIONS[idx];
+state.modalOpen=true;
+state.discovered.add(idx);
+document.getElementById('progress-count').textContent=state.discovered.size;
+
+// Check completion
+if(state.discovered.size===9){
+setTimeout(()=>{
+document.getElementById('completion-banner').classList.remove('hidden-banner');
+document.getElementById('completion-banner').classList.add('show-banner');
+},600);
+}
+
+const overlay=document.getElementById('modal-overlay');
+document.getElementById('modal-station-num').textContent=`Station ${idx+1} of 9`;
+document.getElementById('modal-title').textContent=s.name;
+
+let statsHTML='';
+s.stats.forEach(st=>{
+statsHTML+=`<div class="stat-card"><div class="stat-num">${st.n}</div><div class="stat-label">${st.l}</div></div>`;
+});
+
+let dotsHTML='';
+for(let i=1;i<=5;i++){
+dotsHTML+=`<div class="dot${i<=s.sustScore?' filled':''}"></div>`;
+}
+
+document.getElementById('modal-body').innerHTML=`
+<div class="modal-section">
+<h3><span class="icon">✦</span> The Good</h3>
+<p>${s.good}</p>
+</div>
+<div class="modal-section">
+<h3><span class="icon">⚡</span> The Tricky</h3>
+<p>${s.tricky}</p>
+</div>
+<div class="modal-section">
+<h3><span class="icon">📊</span> By the Numbers</h3>
+<div class="stats-grid">${statsHTML}</div>
+</div>
+<div class="modal-section">
+<h3><span class="icon">🍷</span> Flavor Impact</h3>
+<div class="flavor-quote">${s.flavor}</div>
+</div>
+<div class="modal-section">
+<h3><span class="icon">🌿</span> Sustainability Score</h3>
+<div class="sustainability">
+<div class="dots">${dotsHTML}</div>
+<span style="font-size:0.85rem;color:var(--charcoal);opacity:0.7;margin-left:4px">${s.sustScore}/5</span>
+</div>
+<p style="margin-top:6px;font-size:0.85rem">${s.sustNote}</p>
+</div>`;
+
+overlay.classList.add('active');
+document.getElementById('modal-close').focus();
+}
+
+function closeModal(){
+state.modalOpen=false;
+document.getElementById('modal-overlay').classList.remove('active');
+}
+
+document.getElementById('modal-close').addEventListener('click',closeModal);
+document.getElementById('modal-overlay').addEventListener('click',e=>{
+if(e.target===document.getElementById('modal-overlay'))closeModal();
+});
+
+// ===== INPUT =====
+document.addEventListener('keydown',e=>{
+keys[e.code]=true;
+if((e.code==='Space'||e.code==='KeyE')&&state.nearStation!==null&&!state.modalOpen){
+e.preventDefault();
+openModal(state.nearStation);
+}
+if(e.code==='Escape'&&state.modalOpen){
+closeModal();
+}
+});
+document.addEventListener('keyup',e=>{keys[e.code]=false;});
+
+// Mobile d-pad
+document.querySelectorAll('.dpad-btn').forEach(btn=>{
+const dir=btn.dataset.dir;
+const press=()=>{
+if(dir==='interact'){
+if(state.nearStation!==null&&!state.modalOpen)openModal(state.nearStation);
+}else{keys[dir]=true;}
+};
+const release=()=>{if(dir!=='interact')keys[dir]=false;};
+btn.addEventListener('mousedown',press);
+btn.addEventListener('mouseup',release);
+btn.addEventListener('mouseleave',release);
+btn.addEventListener('touchstart',e=>{e.preventDefault();press();},{passive:false});
+btn.addEventListener('touchend',e=>{e.preventDefault();release();},{passive:false});
+});
+
+// Click/tap to move
+canvas.addEventListener('click',e=>{
+if(state.modalOpen)return;
+const rect=canvas.getBoundingClientRect();
+const clickX=e.clientX-rect.left;
+const clickY=e.clientY-rect.top;
+const cx=canvas.width/2,cy=canvas.height/2;
+const dx=clickX-cx,dy=clickY-cy;
+const dist=Math.hypot(dx,dy);
+
+if(dist<TILE){
+// Click on grape = interact
+if(state.nearStation!==null)openModal(state.nearStation);
+return;
+}
+
+// Determine direction to move toward click
+const angle=Math.atan2(dy,dx);
+// Set temporary movement keys
+Object.keys(keys).forEach(k=>{if(['up','down','left','right'].includes(k))keys[k]=false;});
+if(Math.abs(dx)>Math.abs(dy)){
+keys[dx>0?'right':'left']=true;
+}else{
+keys[dy>0?'down':'up']=true;
+}
+// Stop after brief movement
+setTimeout(()=>{
+['up','down','left','right'].forEach(k=>keys[k]=false);
+},200);
+});
+
+// ===== START =====
+document.getElementById('start-btn').addEventListener('click',()=>{
+document.getElementById('opening').classList.add('hidden');
+document.getElementById('game-container').classList.add('active');
+resize();
+gameLoop();
+});
+
+// Handle roundRect polyfill
+if(!CanvasRenderingContext2D.prototype.roundRect){
+CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
+if(typeof r==='number')r=[r,r,r,r];
+this.moveTo(x+r[0],y);
+this.lineTo(x+w-r[1],y);
+this.quadraticCurveTo(x+w,y,x+w,y+r[1]);
+this.lineTo(x+w,y+h-r[2]);
+this.quadraticCurveTo(x+w,y+h,x+w-r[2],y+h);
+this.lineTo(x+r[3],y+h);
+this.quadraticCurveTo(x,y+h,x,y+h-r[3]);
+this.lineTo(x,y+r[0]);
+this.quadraticCurveTo(x,y,x+r[0],y);
+this.closePath();
+return this;
+};
+}
+</script>
+</body>
+</html>
