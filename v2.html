@@ -18,12 +18,12 @@ canvas{display:none}
 /* ===== OPENING SCREEN ===== */
 #opening{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;
 background:linear-gradient(180deg,#2a1520 0%,#3d1f30 40%,#4a2838 70%,#1a1018 100%);
-transition:opacity 0.8s ease,transform 0.8s ease}
+transition:opacity 0.8s ease,transform 0.8s ease;overflow-y:auto;padding:24px 16px}
 #opening.hidden{opacity:0;pointer-events:none;transform:scale(1.05)}
 #opening::before{content:'';position:absolute;inset:0;
 background:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0v60M0 30h60' stroke='%23ffffff' stroke-width='0.3' opacity='0.04'/%3E%3C/svg%3E");
-opacity:0.5}
-.opening-vine{position:absolute;opacity:0.08}
+opacity:0.5;pointer-events:none}
+.opening-vine{position:absolute;opacity:0.08;pointer-events:none}
 .opening-vine-left{left:-20px;top:10%;width:200px;height:80%;
 background:repeating-linear-gradient(180deg,transparent,transparent 40px,var(--sage) 40px,var(--sage) 42px)}
 .opening-vine-right{right:-20px;top:5%;width:200px;height:85%;
@@ -31,26 +31,44 @@ background:repeating-linear-gradient(180deg,transparent,transparent 35px,var(--s
 .title-container{text-align:center;z-index:1;animation:fadeUp 1.2s ease-out}
 .title-pre{font-family:'Lora',serif;font-size:clamp(0.9rem,2vw,1.1rem);color:var(--amber);letter-spacing:0.3em;text-transform:uppercase;margin-bottom:12px;opacity:0.8}
 .title-main{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,6vw,4.5rem);font-weight:900;color:var(--cream);line-height:1.1;margin-bottom:8px}
-.title-sub{font-family:'Playfair Display',serif;font-size:clamp(1rem,2.5vw,1.6rem);font-weight:400;font-style:italic;color:var(--amber);opacity:0.85;margin-bottom:40px}
-#grape-preview{margin:30px auto;width:80px;height:80px;position:relative;animation:grapeFloat 3s ease-in-out infinite}
-#grape-preview .body{width:80px;height:80px;background:radial-gradient(circle at 35% 35%,var(--grape-light),var(--grape),var(--grape-dark));border-radius:50%;position:relative;box-shadow:0 8px 25px rgba(107,63,160,0.4),inset 0 -3px 8px rgba(0,0,0,0.2)}
-#grape-preview .eye{position:absolute;width:8px;height:10px;background:#fff;border-radius:50%;top:32px}
-#grape-preview .eye::after{content:'';position:absolute;width:5px;height:5px;background:var(--charcoal);border-radius:50%;bottom:1px;left:50%;transform:translateX(-50%)}
-#grape-preview .eye-l{left:26px}
-#grape-preview .eye-r{left:44px}
-#grape-preview .mouth{position:absolute;width:14px;height:7px;border:2px solid var(--charcoal);border-top:none;border-radius:0 0 10px 10px;top:48px;left:33px}
-#grape-preview .leaf{position:absolute;top:-12px;left:34px;width:18px;height:14px;background:var(--leaf);border-radius:2px 50% 50% 50%;transform:rotate(-30deg);box-shadow:1px 1px 3px rgba(0,0,0,0.2)}
-#grape-preview .stem{position:absolute;top:-6px;left:39px;width:3px;height:10px;background:#5a3a2a;border-radius:1px}
+.title-sub{font-family:'Playfair Display',serif;font-size:clamp(1rem,2.5vw,1.6rem);font-weight:400;font-style:italic;color:var(--amber);opacity:0.85;margin-bottom:16px}
+
+/* ===== GRAPE SELECTION ===== */
+.grape-selection{z-index:1;text-align:center;margin:8px 0 20px;animation:fadeUp 1.2s ease-out 0.2s both}
+.grape-selection-title{font-family:'Playfair Display',serif;font-size:clamp(1rem,2.5vw,1.3rem);font-weight:700;
+color:var(--cream);margin-bottom:6px;letter-spacing:0.05em}
+.grape-selection-hint{font-family:'Lora',serif;font-size:0.85rem;color:var(--amber);opacity:0.6;margin-bottom:16px}
+.grape-options{display:flex;gap:24px;justify-content:center;align-items:stretch}
+.grape-option{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.12);
+border-radius:16px;padding:20px 28px 16px;cursor:pointer;transition:all 0.35s ease;
+display:flex;flex-direction:column;align-items:center;gap:6px;min-width:140px;position:relative;overflow:hidden}
+.grape-option::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity 0.35s;
+background:radial-gradient(circle at 50% 40%,rgba(212,168,67,0.12),transparent 70%)}
+.grape-option:hover{background:rgba(255,255,255,0.08);border-color:rgba(212,168,67,0.35);transform:translateY(-4px)}
+.grape-option:hover::before{opacity:1}
+.grape-option.selected{background:rgba(212,168,67,0.1);border-color:var(--amber);
+transform:translateY(-4px);box-shadow:0 8px 30px rgba(212,168,67,0.2)}
+.grape-option.selected::before{opacity:1}
+.grape-option img{width:80px;height:80px;object-fit:contain;
+filter:drop-shadow(0 4px 10px rgba(0,0,0,0.35));transition:transform 0.35s ease}
+.grape-option:hover img{transform:scale(1.05)}
+.grape-option.selected img{transform:scale(1.12);filter:drop-shadow(0 6px 16px rgba(212,168,67,0.25))}
+.grape-option-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--cream)}
+.grape-option-desc{font-family:'Lora',serif;font-size:0.78rem;color:var(--amber);opacity:0.65;line-height:1.3}
+.grape-option-varietal{font-family:'DM Sans',sans-serif;font-size:0.7rem;color:rgba(245,236,215,0.4);
+margin-top:2px;letter-spacing:0.03em}
+
 #start-btn{
 z-index:1;padding:16px 48px;font-family:'Lora',serif;font-size:1.1rem;
 background:linear-gradient(135deg,var(--burgundy),#7a2d44);color:var(--cream);
 border:1px solid rgba(212,168,67,0.3);border-radius:50px;cursor:pointer;
 letter-spacing:0.08em;transition:all 0.3s ease;position:relative;overflow:hidden;
 animation:fadeUp 1.2s ease-out 0.4s both}
-#start-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(91,35,51,0.5);border-color:var(--amber)}
+#start-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 30px rgba(91,35,51,0.5);border-color:var(--amber)}
 #start-btn::after{content:'';position:absolute;inset:-2px;border-radius:52px;
 background:linear-gradient(135deg,transparent,rgba(212,168,67,0.2),transparent);opacity:0;transition:opacity 0.3s}
-#start-btn:hover::after{opacity:1}
+#start-btn:hover:not(:disabled)::after{opacity:1}
+#start-btn:disabled{opacity:0.35;cursor:not-allowed}
 .controls-hint{z-index:1;margin-top:28px;color:rgba(245,236,215,0.4);font-size:0.8rem;letter-spacing:0.1em;animation:fadeUp 1.2s ease-out 0.8s both}
 
 /* ===== GAME CONTAINER ===== */
@@ -126,6 +144,14 @@ border-radius:50%;color:var(--cream);font-size:1.2rem;cursor:pointer;
 display:flex;align-items:center;justify-content:center;z-index:2;transition:all 0.2s}
 #modal-close:hover{background:rgba(255,255,255,0.25);transform:rotate(90deg)}
 
+/* ===== MODAL IMAGE ===== */
+.modal-image-container{text-align:center;margin-bottom:20px;padding:20px 16px;
+background:linear-gradient(135deg,rgba(91,35,51,0.04),rgba(212,168,67,0.06));
+border-radius:14px;border:1px solid rgba(91,35,51,0.06)}
+.modal-bottle-img{max-height:200px;max-width:80%;object-fit:contain;
+filter:drop-shadow(0 6px 16px rgba(0,0,0,0.15));transition:transform 0.3s ease}
+.modal-bottle-img:hover{transform:scale(1.03)}
+
 /* ===== INTERACT PROMPT ===== */
 #interact-prompt{position:fixed;bottom:25%;left:50%;transform:translateX(-50%) translateY(10px);
 z-index:90;background:rgba(45,45,45,0.9);color:var(--cream);padding:10px 22px;
@@ -149,9 +175,14 @@ font-family:'DM Sans',sans-serif;font-size:0.8rem;border:1px solid rgba(212,168,
 #hud{top:8px;left:8px}
 .modal-body{padding:20px 24px 28px}
 .modal-header{padding:24px 24px 16px}
+.grape-options{gap:16px}
+.grape-option{padding:16px 20px 14px;min-width:120px}
+.grape-option img{width:64px;height:64px}
 }
 @media(max-width:480px){
 .stats-grid{grid-template-columns:1fr 1fr}
+.grape-option img{width:56px;height:56px}
+.grape-option{min-width:100px;padding:14px 16px 12px}
 }
 
 #game-footer{position:fixed;bottom:0;left:0;right:0;z-index:80;text-align:center;
@@ -178,19 +209,28 @@ display:flex;align-items:center;gap:10px;white-space:nowrap}
 <div class="opening-vine opening-vine-right"></div>
 <div class="title-container">
 <div class="title-pre">A Wines of the World Experience</div>
-<div id="grape-preview">
-<div class="body">
-<div class="eye eye-l"></div>
-<div class="eye eye-r"></div>
-<div class="mouth"></div>
-</div>
-<div class="stem"></div>
-<div class="leaf"></div>
-</div>
 <h1 class="title-main">Journey of a Grape</h1>
 <div class="title-sub">How Packaging Shapes Your Wine</div>
 </div>
-<button id="start-btn" aria-label="Begin your journey">Begin Your Journey</button>
+<div class="grape-selection">
+<div class="grape-selection-title">Choose Your Grape</div>
+<div class="grape-selection-hint">This determines your character.</div>
+<div class="grape-options">
+<button class="grape-option" data-color="green" aria-label="Choose green grape">
+<img src="assets/green_grape.png" alt="Green Grape" draggable="false">
+<span class="grape-option-name">Green Grape</span>
+<span class="grape-option-desc">White wine varietals</span>
+<span class="grape-option-varietal">Chardonnay, Riesling, Pinot Grigio</span>
+</button>
+<button class="grape-option" data-color="purple" aria-label="Choose purple grape">
+<img src="assets/purple_grape.png" alt="Purple Grape" draggable="false">
+<span class="grape-option-name">Purple Grape</span>
+<span class="grape-option-desc">Red wine varietals</span>
+<span class="grape-option-varietal">Cabernet, Merlot, Shiraz</span>
+</button>
+</div>
+</div>
+<button id="start-btn" disabled aria-label="Begin your journey">Begin Your Journey</button>
 <div class="controls-hint">Arrow keys or WASD to move · Space or E to interact</div>
 </div>
 
@@ -202,10 +242,10 @@ display:flex;align-items:center;gap:10px;white-space:nowrap}
 <div id="interact-prompt"><kbd>E</kbd> or <kbd>Space</kbd> to explore</div>
 <div id="mobile-controls">
 <div class="dpad">
-<button class="dpad-btn dpad-up" data-dir="up" aria-label="Move up">▲</button>
-<button class="dpad-btn dpad-down" data-dir="down" aria-label="Move down">▼</button>
-<button class="dpad-btn dpad-left" data-dir="left" aria-label="Move left">◄</button>
-<button class="dpad-btn dpad-right" data-dir="right" aria-label="Move right">►</button>
+<button class="dpad-btn dpad-up" data-dir="up" aria-label="Move up">&#9650;</button>
+<button class="dpad-btn dpad-down" data-dir="down" aria-label="Move down">&#9660;</button>
+<button class="dpad-btn dpad-left" data-dir="left" aria-label="Move left">&#9668;</button>
+<button class="dpad-btn dpad-right" data-dir="right" aria-label="Move right">&#9658;</button>
 <button class="dpad-btn dpad-center" data-dir="interact" aria-label="Interact">ACT</button>
 </div>
 </div>
@@ -214,7 +254,7 @@ Wines of the World · University Project · Data sourced from industry publicati
 </div>
 <div id="completion-banner" class="hidden-banner">
 <div class="completion-inner">
-<span class="completion-icon">🍇</span>
+<span class="completion-icon">&#127815;</span>
 <strong>Journey Complete!</strong> You've explored all 10 packaging methods.
 </div>
 </div>
@@ -226,120 +266,170 @@ Wines of the World · University Project · Data sourced from industry publicati
 <div class="modal-header">
 <div class="station-num" id="modal-station-num"></div>
 <h2 id="modal-title"></h2>
-<button id="modal-close" aria-label="Close panel">✕</button>
+<button id="modal-close" aria-label="Close panel">&#10005;</button>
 </div>
 <div class="modal-body" id="modal-body"></div>
 </div>
 </div>
 
 <script>
+// ===== GRAPE COLOR STATE =====
+let grapeColor = null; // 'green' or 'purple'
+
+// ===== IMAGE PRELOADING =====
+const images = {};
+const IMAGE_PATHS = {
+green_grape:'assets/green_grape.png',
+purple_grape:'assets/purple_grape.png',
+barrel:'assets/barrel.png',
+green_nat_cork:'assets/green_nat_cork_bottle.png',
+green_syn_cork:'assets/green_syn_cork_bottle.png',
+green_screw_top:'assets/green_screw_top_bottle.png',
+green_glass_seal:'assets/green_glass_seal_bottle.png',
+green_bag_in_box:'assets/green_bag_in_box.png',
+red_nat_cork:'assets/red_nat_cork_bottle.png',
+red_syn_cork:'assets/red_syn_cork_bottle.png',
+red_screw_top:'assets/red_screw_top_bottle.png',
+red_glass_seal:'assets/red_glass_seal_bottle.png',
+red_bag_in_box:'assets/red_bag_in_box.png'
+};
+
+function preloadImages(){
+return Promise.all(Object.entries(IMAGE_PATHS).map(([key,src])=>{
+return new Promise(resolve=>{
+const img=new Image();
+img.onload=()=>{images[key]=img;resolve();};
+img.onerror=()=>{resolve();}; // graceful fallback
+img.src=src;
+});
+}));
+}
+
+// Station-to-image key mapping (depends on grapeColor)
+function getStationImageKey(stationId){
+const prefix=grapeColor==='green'?'green':'red';
+const map={
+0:prefix+'_nat_cork',
+1:prefix+'_syn_cork',
+2:prefix+'_screw_top',
+3:prefix+'_glass_seal',
+4:prefix+'_bag_in_box',
+8:'barrel'
+};
+return map[stationId]||null;
+}
+
+function getStationImageSrc(stationId){
+const prefix=grapeColor==='green'?'green':'red';
+const map={
+0:'assets/'+prefix+'_nat_cork_bottle.png',
+1:'assets/'+prefix+'_syn_cork_bottle.png',
+2:'assets/'+prefix+'_screw_top_bottle.png',
+3:'assets/'+prefix+'_glass_seal_bottle.png',
+4:'assets/'+prefix+'_bag_in_box.png',
+8:'assets/barrel.png'
+};
+return map[stationId]||null;
+}
+
 // ===== STATION DATA =====
 const STATIONS = [
 {id:0,name:"Natural Cork",x:6,y:3,
-icon:"🌳",color:"#8B6B4A",
-good:"Natural cork has sealed wine bottles for over 250 years, creating a proven, time-tested closure. Its cellular structure allows micro-amounts of oxygen to enter — with variable oxygen transmission rates of 0.5 to 10 μg O₂/day — helping wines develop complex flavors during aging. Cork is harvested from living cork oak trees every nine years without harming them, making it a renewable resource.",
-tricky:"About 1–3% of bottles sealed with natural cork suffer from 'cork taint' (TCA), which can mute flavors or produce a musty smell. Quality varies between corks, and premium corks come at a higher cost. They also require bottles to be stored on their sides to keep the cork moist.",
-stats:[{n:"250+",l:"Years in use"},{n:"~2-3%",l:"TCA failure rate"},{n:"$0.30–$1.00",l:"Per cork (AUD)"},{n:"9 yrs",l:"Bark harvest cycle"}],
-flavor:"Natural cork's slow oxygen exchange lets tannic reds soften and develop layered complexity over decades.",
-sustScore:4,sustNote:"Fully biodegradable, harvested from living cork oak trees (150–200 yr lifespan) that support rich Mediterranean ecosystems and act as carbon sinks."},
+icon:"\u{1F333}",color:"#8B6B4A",
+good:"Natural cork has sealed wine bottles for over 250 years, creating a proven, time-tested closure. Its cellular structure allows micro-amounts of oxygen to enter \u2014 with variable oxygen transmission rates of 0.5 to 10 \u03BCg O\u2082/day \u2014 helping wines develop complex flavors during aging. Cork is harvested from living cork oak trees every nine years without harming them, making it a renewable resource.",
+tricky:"About 1\u20133% of bottles sealed with natural cork suffer from \u2018cork taint\u2019 (TCA), which can mute flavors or produce a musty smell. Quality varies between corks, and premium corks come at a higher cost. They also require bottles to be stored on their sides to keep the cork moist.",
+stats:[{n:"250+",l:"Years in use"},{n:"~2-3%",l:"TCA failure rate"},{n:"$0.30\u2013$1.00",l:"Per cork (AUD)"},{n:"9 yrs",l:"Bark harvest cycle"}],
+flavor:"Natural cork\u2019s slow oxygen exchange lets tannic reds soften and develop layered complexity over decades.",
+sustScore:4,sustNote:"Fully biodegradable, harvested from living cork oak trees (150\u2013200 yr lifespan) that support rich Mediterranean ecosystems and act as carbon sinks."},
 
 {id:1,name:"Synthetic Cork",x:18,y:5,
-icon:"🔬",color:"#7A9EAF",
+icon:"\u{1F52C}",color:"#7A9EAF",
 good:"Synthetic corks eliminate the risk of cork taint entirely, offering a consistent seal every time. They maintain a familiar opening ritual and bottle appearance for wine drinkers. Production costs are the most predictable and generally the lowest among all closure types.",
-tricky:"Most synthetic corks are made from petroleum-based plastics, raising environmental concerns. They allow high and often erratic oxygen permeation, making them unsuitable for aging beyond 18–24 months. They can be harder to remove than natural cork and are virtually impossible to re-insert for resealing.",
-stats:[{n:"0%",l:"TCA taint risk"},{n:"$0.05–$0.15",l:"Per cork cost"},{n:"18-24 mo",l:"Ideal seal window"},{n:"1990s",l:"Commercial debut"}],
-flavor:"Wines sealed with synthetic cork taste best young and fresh — think vibrant whites and rosés meant to be enjoyed soon.",
+tricky:"Most synthetic corks are made from petroleum-based plastics, raising environmental concerns. They allow high and often erratic oxygen permeation, making them unsuitable for aging beyond 18\u201324 months. They can be harder to remove than natural cork and are virtually impossible to re-insert for resealing.",
+stats:[{n:"0%",l:"TCA taint risk"},{n:"$0.05\u2013$0.15",l:"Per cork cost"},{n:"18-24 mo",l:"Ideal seal window"},{n:"1990s",l:"Commercial debut"}],
+flavor:"Wines sealed with synthetic cork taste best young and fresh \u2014 think vibrant whites and ros\u00E9s meant to be enjoyed soon.",
 sustScore:2,sustNote:"Petroleum-derived plastics with limited recyclability; some newer plant-based versions are emerging."},
 
 {id:2,name:"Screw Cap (Stelvin)",x:28,y:8,
-icon:"🔩",color:"#B0B0B0",
-good:"Screw caps provide an airtight, perfectly consistent seal that virtually eliminates oxidation and cork taint. They're the easiest closure to open — no corkscrew needed. Australia and New Zealand have proven they work beautifully even for premium wines.",
+icon:"\u{1F529}",color:"#B0B0B0",
+good:"Screw caps provide an airtight, perfectly consistent seal that virtually eliminates oxidation and cork taint. They\u2019re the easiest closure to open \u2014 no corkscrew needed. Australia and New Zealand have proven they work beautifully even for premium wines.",
 tricky:"Many consumers still associate screw caps with cheap wine, creating a perception barrier for premium bottles. The aluminum requires mining and significant energy to produce. Some winemakers argue that zero oxygen transfer prevents beneficial aging evolution.",
 stats:[{n:"<0.5%",l:"Failure rate"},{n:"~$0.15",l:"Per cap (AUD)"},{n:"90%+",l:"AU wines use them"},{n:"2001",l:"Major adoption year"}],
-flavor:"Screw caps lock in bright, primary fruit characteristics — your Sauvignon Blanc stays crisp and zingy as intended.",
+flavor:"Screw caps lock in bright, primary fruit characteristics \u2014 your Sauvignon Blanc stays crisp and zingy as intended.",
 sustScore:3,sustNote:"Aluminum is infinitely recyclable, but the liner is often non-recyclable. Mining has environmental costs."},
 
 {id:3,name:"Glass Seal (Vino-Lok)",x:10,y:14,
-icon:"💎",color:"#A8D8EA",
-good:"Vino-Lok uses a glass stopper with an inert O-ring, creating a chemically neutral, elegant seal. It offers zero risk of cork taint and provides a beautiful, premium presentation. The closure is reusable and gives a satisfying 'pop' when opened.",
+icon:"\u{1F48E}",color:"#A8D8EA",
+good:"Vino-Lok uses a glass stopper with an inert O-ring, creating a chemically neutral, elegant seal. It offers zero risk of cork taint and provides a beautiful, premium presentation. The closure is reusable and gives a satisfying \u2018pop\u2019 when opened.",
 tricky:"Glass stoppers cost significantly more than other closures, typically reserved for premium wines. They require a special bottle-mouth design, limiting producer flexibility. Despite their elegance, many markets are unfamiliar with this closure type.",
-stats:[{n:"$0.50–$1.00",l:"Per seal cost"},{n:"0%",l:"Taint risk"},{n:"2003",l:"Introduced by Alcoa"},{n:"100%",l:"Reusable closure"}],
-flavor:"The inert glass seal preserves delicate aromatic whites with crystalline purity — every nuance stays intact.",
+stats:[{n:"$0.50\u2013$1.00",l:"Per seal cost"},{n:"0%",l:"Taint risk"},{n:"2003",l:"Introduced by Alcoa"},{n:"100%",l:"Reusable closure"}],
+flavor:"The inert glass seal preserves delicate aromatic whites with crystalline purity \u2014 every nuance stays intact.",
 sustScore:3,sustNote:"Glass is endlessly recyclable, chemically inert, and reusable; however, production is energy-intensive and requires proprietary bottle-mouth finishes."},
 
 {id:4,name:"Bag-in-Box",x:24,y:16,
-icon:"📦",color:"#C4956A",
-good:"Bag-in-Box packaging keeps wine fresh for 4–6 weeks after opening, thanks to its collapsible bladder that prevents air contact. It's dramatically lighter than glass, with carbon footprints 35–84% lower than glass bottles and requiring six times fewer vehicles for transport. The format is perfect for everyday wines and entertaining.",
-tricky:"The plastic bladder and cardboard box create mixed-material recycling challenges. Wine stored in bag-in-box has a shorter overall shelf life (about 8–12 months). The format still carries a stigma of low quality in many wine cultures despite improving offerings.",
-stats:[{n:"35-84%",l:"Less CO₂ vs glass"},{n:"4-6 wks",l:"Fresh after opening"},{n:"3L/5L",l:"Common sizes"},{n:"1950s",l:"Invented (Scholle)"}],
-flavor:"Bag-in-Box excels at keeping everyday wines — fruity reds, crisp whites — tasting fresh glass after glass.",
+icon:"\u{1F4E6}",color:"#C4956A",
+good:"Bag-in-Box packaging keeps wine fresh for 4\u20136 weeks after opening, thanks to its collapsible bladder that prevents air contact. It\u2019s dramatically lighter than glass, with carbon footprints 35\u201384% lower than glass bottles and requiring six times fewer vehicles for transport. The format is perfect for everyday wines and entertaining.",
+tricky:"The plastic bladder and cardboard box create mixed-material recycling challenges. Wine stored in bag-in-box has a shorter overall shelf life (about 8\u201312 months). The format still carries a stigma of low quality in many wine cultures despite improving offerings.",
+stats:[{n:"35-84%",l:"Less CO\u2082 vs glass"},{n:"4-6 wks",l:"Fresh after opening"},{n:"3L/5L",l:"Common sizes"},{n:"1950s",l:"Invented (Scholle)"}],
+flavor:"Bag-in-Box excels at keeping everyday wines \u2014 fruity reds, crisp whites \u2014 tasting fresh glass after glass.",
 sustScore:5,sustNote:"Lowest carbon footprint of any wine packaging format; mixed materials (plastic bag, aluminum foil, cardboard) can complicate end-of-life recycling."},
 
 {id:5,name:"Tetra Pak / Carton",x:4,y:18,
-icon:"🧃",color:"#7DB87D",
-good:"Tetra Pak cartons are incredibly lightweight, stackable, and use roughly 1/3 the carbon footprint of glass bottles in transport. They're shatterproof and convenient for outdoor events, picnics, and travel. Modern carton wines have seen a quality revolution in recent years.",
-tricky:"Cartons are made of layered paper, plastic, and aluminum — making them difficult to recycle in most areas. They aren't suitable for wines meant for aging. The format struggles against perception bias, as many consumers equate cartons with juice boxes.",
+icon:"\u{1F9C3}",color:"#7DB87D",
+good:"Tetra Pak cartons are incredibly lightweight, stackable, and use roughly 1/3 the carbon footprint of glass bottles in transport. They\u2019re shatterproof and convenient for outdoor events, picnics, and travel. Modern carton wines have seen a quality revolution in recent years.",
+tricky:"Cartons are made of layered paper, plastic, and aluminum \u2014 making them difficult to recycle in most areas. They aren\u2019t suitable for wines meant for aging. The format struggles against perception bias, as many consumers equate cartons with juice boxes.",
 stats:[{n:"68%",l:"Lighter than glass"},{n:"1/3",l:"Carbon vs. bottle"},{n:"~12 mo",l:"Optimal shelf life"},{n:"500mL-1L",l:"Common sizes"}],
-flavor:"Carton wines showcase vibrant, drink-now styles — perfect for that fresh rosé at a summer picnic.",
+flavor:"Carton wines showcase vibrant, drink-now styles \u2014 perfect for that fresh ros\u00E9 at a summer picnic.",
 sustScore:3,sustNote:"Excellent transport efficiency; recycling infrastructure for layered cartons is limited but growing."},
 
 {id:6,name:"Aluminum Can",x:16,y:20,
-icon:"🥫",color:"#D4D4D4",
-good:"Canned wine is the most portable, single-serve format available — chill it, crack it, enjoy it anywhere. Aluminum is 100% recyclable and retains its properties through infinite recycling loops. Cans chill faster than bottles, are shatterproof, and eliminate the need for a glass.",
-tricky:"Wine in cans may interact with the aluminum lining over time, affecting flavor in sensitive wines. The single-serve format limits it to casual contexts and younger demographics. Shelf life is shorter than bottled wine at around 12–18 months.",
+icon:"\u{1F96B}",color:"#D4D4D4",
+good:"Canned wine is the most portable, single-serve format available \u2014 chill it, crack it, enjoy it anywhere. Aluminum is 100% recyclable and retains its properties through infinite recycling loops. Cans chill faster than bottles, are shatterproof, and eliminate the need for a glass.",
+tricky:"Wine in cans may interact with the aluminum lining over time, affecting flavor in sensitive wines. The single-serve format limits it to casual contexts and younger demographics. Shelf life is shorter than bottled wine at around 12\u201318 months.",
 stats:[{n:"~43%",l:"Can recycling rate (US)"},{n:"250-375mL",l:"Standard pour"},{n:"$5-10",l:"Typical 4-pack"},{n:"59%+",l:"Recent US market growth"}],
-flavor:"Canned wines shine as bright, refreshing sippers — think sparkling, rosé, and crisp whites served ice-cold.",
+flavor:"Canned wines shine as bright, refreshing sippers \u2014 think sparkling, ros\u00E9, and crisp whites served ice-cold.",
 sustScore:4,sustNote:"Aluminum has the best real-world recycling loop of any packaging; energy-intensive to produce from raw ore."},
 
 {id:7,name:"PET Plastic Bottle",x:30,y:13,
-icon:"🧴",color:"#F0C987",
-good:"PET bottles weigh about 1/6th of glass, dramatically cutting shipping weight and fuel costs. They're shatterproof, making them ideal for poolside, outdoor venues, and airlines. The material is widely recyclable in most municipal programs worldwide.",
-tricky:"PET is slightly permeable to oxygen, limiting shelf life to 12–18 months maximum. Plastic perception is a growing issue as consumers become more eco-conscious. Heat and UV light can degrade both the container and the wine inside.",
+icon:"\u{1F9F4}",color:"#F0C987",
+good:"PET bottles weigh about 1/6th of glass, dramatically cutting shipping weight and fuel costs. They\u2019re shatterproof, making them ideal for poolside, outdoor venues, and airlines. The material is widely recyclable in most municipal programs worldwide.",
+tricky:"PET is slightly permeable to oxygen, limiting shelf life to 12\u201318 months maximum. Plastic perception is a growing issue as consumers become more eco-conscious. Heat and UV light can degrade both the container and the wine inside.",
 stats:[{n:"83%",l:"Lighter than glass"},{n:"12-18 mo",l:"Shelf life"},{n:"#1 PETE",l:"Recycle code"},{n:"1 billion+",l:"Bottles used/yr for wine"}],
-flavor:"PET works well for light, easy-drinking wines — simple whites and rosés meant to be enjoyed promptly.",
+flavor:"PET works well for light, easy-drinking wines \u2014 simple whites and ros\u00E9s meant to be enjoyed promptly.",
 sustScore:2,sustNote:"Widely recyclable but derived from petroleum; contributes to microplastic pollution when not properly recycled."},
 
 {id:8,name:"Kegged / On-Tap",x:22,y:3,
-icon:"🍺",color:"#B8860B",
-good:"Kegged wine eliminates individual packaging waste entirely — one keg replaces approximately 26 bottles. The closed stainless-steel system preserves wine under inert gas, keeping it fresh for weeks. It reduces restaurant storage needs and speeds up service dramatically.",
-tricky:"Requires specialized equipment (keg lines, CO₂/nitrogen systems) that not every venue can install. Consumer perception still associates kegs with beer rather than quality wine. Distribution is limited, and the system works best for high-volume pours.",
+icon:"\u{1F37A}",color:"#B8860B",
+good:"Kegged wine eliminates individual packaging waste entirely \u2014 one keg replaces approximately 26 bottles. The closed stainless-steel system preserves wine under inert gas, keeping it fresh for weeks. It reduces restaurant storage needs and speeds up service dramatically.",
+tricky:"Requires specialized equipment (keg lines, CO\u2082/nitrogen systems) that not every venue can install. Consumer perception still associates kegs with beer rather than quality wine. Distribution is limited, and the system works best for high-volume pours.",
 stats:[{n:"26",l:"Bottles per keg"},{n:"96%",l:"Less packaging waste"},{n:"$0",l:"Closure cost per serve"},{n:"3-4 wks",l:"Fresh after tapping"}],
-flavor:"On-tap wine arrives at your glass exactly as the winemaker intended — pristine, temperature-controlled, and lively.",
+flavor:"On-tap wine arrives at your glass exactly as the winemaker intended \u2014 pristine, temperature-controlled, and lively.",
 sustScore:5,sustNote:"Reusable stainless steel kegs are the gold standard for zero-waste wine service."},
 
 {id:9,name:"Technical Cork (Diam)",x:14,y:10,
-icon:"🧪",color:"#A67B5B",
-good:"Diam closures use supercritical CO₂ extraction to purify natural cork granules, guaranteeing zero TCA contamination. They offer precisely controlled oxygen transmission rates, available in grades matched to aging windows (Diam 5, 10, 30, and Origine for 20+ years). Professional tasters report no detectable flavor impact on the wine.",
-tricky:"Multi-decade aging data (beyond 10–15 years) under Diam closures remain limited, so their performance for truly long-term cellaring is still being proven. They cost more than screw caps and basic agglomerated corks. Some traditionalists view them as lacking the prestige of single-piece natural cork.",
-stats:[{n:"0%",l:"TCA taint rate"},{n:"$0.20–$0.23",l:"Per cork (AUD)"},{n:"5-30 yrs",l:"Aging grade range"},{n:"CO₂",l:"Supercritical extraction"}],
-flavor:"Diam closures deliver sensory neutrality — the wine evolves exactly as the winemaker intended, with no cork-derived interference.",
+icon:"\u{1F9EA}",color:"#A67B5B",
+good:"Diam closures use supercritical CO\u2082 extraction to purify natural cork granules, guaranteeing zero TCA contamination. They offer precisely controlled oxygen transmission rates, available in grades matched to aging windows (Diam 5, 10, 30, and Origine for 20+ years). Professional tasters report no detectable flavor impact on the wine.",
+tricky:"Multi-decade aging data (beyond 10\u201315 years) under Diam closures remain limited, so their performance for truly long-term cellaring is still being proven. They cost more than screw caps and basic agglomerated corks. Some traditionalists view them as lacking the prestige of single-piece natural cork.",
+stats:[{n:"0%",l:"TCA taint rate"},{n:"$0.20\u2013$0.23",l:"Per cork (AUD)"},{n:"5-30 yrs",l:"Aging grade range"},{n:"CO\u2082",l:"Supercritical extraction"}],
+flavor:"Diam closures deliver sensory neutrality \u2014 the wine evolves exactly as the winemaker intended, with no cork-derived interference.",
 sustScore:4,sustNote:"Made from renewable cork granules with industrial purification; cork-based and lower waste than natural cork, but processing adds energy cost."}
 ];
 
 // ===== MAZE / WORLD =====
-// Grid-based world: 0=path, 1=vine row, 2=station (set dynamically)
 const COLS=36, ROWS=24, TILE=48;
 const WORLD_W=COLS*TILE, WORLD_H=ROWS*TILE;
 
-// Generate maze layout - 1 = vine/wall
 const grid=[];
 for(let r=0;r<ROWS;r++){grid[r]=[];for(let c=0;c<COLS;c++){grid[r][c]=0;}}
 
-// Create vine rows (walls) with organic paths
 function buildMaze(){
-// Border walls
 for(let c=0;c<COLS;c++){grid[0][c]=1;grid[ROWS-1][c]=1;}
 for(let r=0;r<ROWS;r++){grid[r][0]=1;grid[r][COLS-1]=1;}
 
-// Vine row patterns - create horizontal and vertical vine rows with gaps
-// Horizontal vine rows
 const hRows=[2,4,7,9,11,13,15,17,19,21];
 hRows.forEach(r=>{
 if(r>=ROWS-1)return;
-for(let c=2;c<COLS-2;c++){
-grid[r][c]=1;
-}
-// Create gaps
+for(let c=2;c<COLS-2;c++){grid[r][c]=1;}
 const gaps=[];
 const numGaps=3+Math.floor(Math.random()*3);
 for(let g=0;g<numGaps;g++){
@@ -354,18 +444,14 @@ if(cc>=1&&cc<COLS-1)grid[r][cc]=0;
 });
 });
 
-// Vertical vine segments
 const vCols=[5,9,13,17,21,25,29,33];
 vCols.forEach(c=>{
 if(c>=COLS-1)return;
 for(let r=1;r<ROWS-1;r++){
-if(grid[r][c]===0&&Math.random()<0.35){
-grid[r][c]=1;
-}
+if(grid[r][c]===0&&Math.random()<0.35){grid[r][c]=1;}
 }
 });
 
-// Ensure station tiles are clear
 STATIONS.forEach(s=>{
 for(let dr=-1;dr<=1;dr++){
 for(let dc=-1;dc<=1;dc++){
@@ -374,14 +460,12 @@ if(rr>=0&&rr<ROWS&&cc>=0&&cc<COLS)grid[rr][cc]=0;
 }}
 });
 
-// Ensure start area is clear
 for(let dr=-1;dr<=2;dr++){
 for(let dc=-2;dc<=2;dc++){
 const rr=1+dr,cc=Math.floor(COLS/2)+dc;
 if(rr>=0&&rr<ROWS&&cc>=0&&cc<COLS)grid[rr][cc]=0;
 }}
 
-// Flood fill from start to ensure connectivity, carve paths if needed
 ensureConnectivity();
 }
 
@@ -400,11 +484,8 @@ queue.push([nr,nc]);
 }
 });
 }
-// For each station, if not reachable, carve a path
 STATIONS.forEach(s=>{
 if(!visited[s.y][s.x]){
-// BFS from station to nearest visited cell, carving walls
-let carvePath=[[s.y,s.x]];
 let found=false;
 const cVisited=Array.from({length:ROWS},()=>Array(COLS).fill(false));
 const parent=Array.from({length:ROWS},()=>Array(COLS).fill(null));
@@ -418,7 +499,6 @@ if(nr>0&&nr<ROWS-1&&nc>0&&nc<COLS-1&&!cVisited[nr][nc]){
 cVisited[nr][nc]=true;
 parent[nr][nc]=[cr,cc];
 if(visited[nr][nc]){found=true;
-// Trace back and carve
 let cur=[nr,nc];
 while(cur){
 grid[cur[0]][cur[1]]=0;
@@ -478,7 +558,6 @@ return[sx,sy];
 function drawWorld(){
 ctx.clearRect(0,0,canvas.width,canvas.height);
 
-// Compute visible area
 const camX=state.grapeX-canvas.width/2;
 const camY=state.grapeY-canvas.height/2;
 const startC=Math.max(0,Math.floor(camX/TILE)-1);
@@ -494,11 +573,9 @@ skyGrad.addColorStop(1,'#E8DCC8');
 ctx.fillStyle=skyGrad;
 ctx.fillRect(0,0,canvas.width,canvas.height);
 
-// Distant hills
 const[hx,hy]=worldToScreen(0,0);
 drawHills(hx,hy);
 
-// Draw tiles
 for(let r=startR;r<endR;r++){
 for(let c=startC;c<endC;c++){
 const[sx,sy]=worldToScreen(c*TILE,r*TILE);
@@ -509,22 +586,43 @@ drawPathTile(sx,sy,r,c);
 }
 }}
 
+// Draw barrel decorations on path
+drawBarrelDecorations();
+
 // Draw stations
 STATIONS.forEach((s,i)=>{
 const[sx,sy]=worldToScreen(s.x*TILE,s.y*TILE);
 drawStation(sx,sy,s,i);
 });
 
-// Draw grape
 drawGrape();
-
-// Grain overlay
 drawGrain();
+}
+
+// ===== BARREL DECORATIONS =====
+const BARREL_SPOTS=[{x:12,y:6},{x:26,y:11},{x:8,y:20},{x:32,y:18}];
+
+function drawBarrelDecorations(){
+const barrelImg=images['barrel'];
+if(!barrelImg)return;
+BARREL_SPOTS.forEach(b=>{
+if(grid[b.y]&&grid[b.y][b.x]===0){
+const[sx,sy]=worldToScreen(b.x*TILE,b.y*TILE);
+// Only draw if on screen
+if(sx>-TILE*2&&sx<canvas.width+TILE*2&&sy>-TILE*2&&sy<canvas.height+TILE*2){
+const scale=Math.min((TILE*0.7)/barrelImg.width,(TILE*0.7)/barrelImg.height);
+const w=barrelImg.width*scale;
+const h=barrelImg.height*scale;
+ctx.globalAlpha=0.55;
+ctx.drawImage(barrelImg,sx+TILE/2-w/2,sy+TILE/2-h/2,w,h);
+ctx.globalAlpha=1;
+}
+}
+});
 }
 
 function drawHills(offsetX,offsetY){
 const w=canvas.width;
-// Far hills
 ctx.fillStyle='#8BA882';
 ctx.beginPath();
 ctx.moveTo(0,canvas.height*0.4+offsetY*0.02);
@@ -533,7 +631,6 @@ ctx.lineTo(x,canvas.height*0.35+Math.sin(x*0.005+1)*40+Math.sin(x*0.012)*20+offs
 }
 ctx.lineTo(w,canvas.height);ctx.lineTo(0,canvas.height);ctx.fill();
 
-// Near hills
 ctx.fillStyle='#7A9B6F';
 ctx.beginPath();
 ctx.moveTo(0,canvas.height*0.45+offsetY*0.03);
@@ -544,14 +641,11 @@ ctx.lineTo(w,canvas.height);ctx.lineTo(0,canvas.height);ctx.fill();
 }
 
 function drawPathTile(sx,sy,r,c){
-// Dirt path
 ctx.fillStyle='#C4AD8A';
 ctx.fillRect(sx,sy,TILE,TILE);
-// Subtle variation
 const v=((r*7+c*13)%5)*3;
-ctx.fillStyle=`rgba(160,130,90,${0.05+v*0.01})`;
+ctx.fillStyle='rgba(160,130,90,'+(0.05+v*0.01)+')';
 ctx.fillRect(sx,sy,TILE,TILE);
-// Tiny pebbles
 if((r+c)%3===0){
 ctx.fillStyle='rgba(100,80,60,0.15)';
 ctx.beginPath();
@@ -561,18 +655,14 @@ ctx.fill();
 }
 
 function drawVineTile(sx,sy,r,c){
-// Green vine base
 ctx.fillStyle='#5A7A4F';
 ctx.fillRect(sx,sy,TILE,TILE);
-// Darker variation
-ctx.fillStyle=`rgba(40,60,30,${0.1+((r*3+c*7)%4)*0.05})`;
+ctx.fillStyle='rgba(40,60,30,'+(0.1+((r*3+c*7)%4)*0.05)+')';
 ctx.fillRect(sx,sy,TILE,TILE);
 
-// Trellis post
 if(c%3===0){
 ctx.fillStyle='#6B5030';
 ctx.fillRect(sx+TILE/2-2,sy,4,TILE);
-// Wire
 ctx.strokeStyle='rgba(150,150,150,0.4)';
 ctx.lineWidth=1;
 ctx.beginPath();
@@ -581,9 +671,13 @@ ctx.moveTo(sx,sy+TILE*0.6);ctx.lineTo(sx+TILE,sy+TILE*0.6);
 ctx.stroke();
 }
 
-// Grape clusters on vines
+// Grape clusters on vines - color matches chosen grape
 if((r+c)%4===0){
+if(grapeColor==='green'){
+ctx.fillStyle='rgba(120,190,80,0.45)';
+}else{
 ctx.fillStyle='rgba(90,30,70,0.4)';
+}
 ctx.beginPath();
 ctx.arc(sx+15,sy+TILE*0.4,5,0,Math.PI*2);
 ctx.arc(sx+20,sy+TILE*0.45,4,0,Math.PI*2);
@@ -591,7 +685,6 @@ ctx.arc(sx+12,sy+TILE*0.48,4,0,Math.PI*2);
 ctx.fill();
 }
 
-// Leaves
 ctx.fillStyle='rgba(80,120,60,0.5)';
 if((r*5+c)%3===0){
 ctx.beginPath();
@@ -620,29 +713,41 @@ ctx.beginPath();
 ctx.ellipse(sx+TILE/2,sy+TILE-4,22,8,0,0,Math.PI*2);
 ctx.fill();
 
-// Station icon base
-ctx.fillStyle=station.color;
 const bob=isNear?Math.sin(t*3)*3:0;
+
+// Try to draw asset image
+const imgKey=getStationImageKey(idx);
+const img=imgKey?images[imgKey]:null;
+
+if(img){
+const maxW=TILE*1.4;
+const maxH=TILE*1.6;
+const scale=Math.min(maxW/img.width,maxH/img.height);
+const w=img.width*scale;
+const h=img.height*scale;
+ctx.drawImage(img,sx+TILE/2-w/2,sy+TILE/2-h/2+bob-6,w,h);
+}else{
+// Fallback to emoji icon
+ctx.fillStyle=station.color;
 ctx.beginPath();
 ctx.roundRect(sx+8,sy+6+bob,TILE-16,TILE-16,6);
 ctx.fill();
-
-// Border
 ctx.strokeStyle=discovered?'#D4A843':'rgba(255,255,255,0.3)';
 ctx.lineWidth=discovered?2:1;
 ctx.stroke();
-
-// Icon
 ctx.font='20px serif';
 ctx.textAlign='center';
 ctx.textBaseline='middle';
 ctx.fillText(station.icon,sx+TILE/2,sy+TILE/2+bob);
+}
 
-// Checkmark if discovered
+// Discovered checkmark
 if(discovered){
 ctx.fillStyle='#D4A843';
 ctx.font='bold 12px sans-serif';
-ctx.fillText('✓',sx+TILE-8,sy+12);
+ctx.textAlign='center';
+ctx.textBaseline='middle';
+ctx.fillText('\u2713',sx+TILE-8,sy+12);
 }
 }
 
@@ -664,18 +769,24 @@ ctx.beginPath();
 ctx.ellipse(0,GRAPE_R+2,GRAPE_R*0.8,4,0,0,Math.PI*2);
 ctx.fill();
 
-// Body
+// Body - color based on grape choice
 const bodyGrad=ctx.createRadialGradient(-4,-4,2,0,0,GRAPE_R);
+if(grapeColor==='green'){
+bodyGrad.addColorStop(0,'#C8F0A0');
+bodyGrad.addColorStop(0.5,'#6DB84A');
+bodyGrad.addColorStop(1,'#3A7820');
+}else{
 bodyGrad.addColorStop(0,'#9B6FD0');
 bodyGrad.addColorStop(0.5,'#6B3FA0');
 bodyGrad.addColorStop(1,'#4B1F80');
+}
 ctx.fillStyle=bodyGrad;
 ctx.beginPath();
 ctx.arc(0,0,GRAPE_R,0,Math.PI*2);
 ctx.fill();
 
 // Shine
-ctx.fillStyle='rgba(255,255,255,0.2)';
+ctx.fillStyle='rgba(255,255,255,0.25)';
 ctx.beginPath();
 ctx.ellipse(-5,-6,6,4,-0.3,0,Math.PI*2);
 ctx.fill();
@@ -692,7 +803,6 @@ ctx.rotate(-0.5);
 ctx.beginPath();
 ctx.ellipse(0,0,8,5,0,0,Math.PI*2);
 ctx.fill();
-// Leaf vein
 ctx.strokeStyle='rgba(30,60,20,0.4)';
 ctx.lineWidth=0.8;
 ctx.beginPath();ctx.moveTo(-6,0);ctx.lineTo(6,0);ctx.stroke();
@@ -701,11 +811,9 @@ ctx.restore();
 // Eyes
 const eyeOffX=state.facing==='left'?-2:state.facing==='right'?2:0;
 const eyeOffY=state.facing==='up'?-2:state.facing==='down'?1:0;
-// Whites
 ctx.fillStyle='#FFF';
 ctx.beginPath();ctx.ellipse(-5+eyeOffX*0.3,-3,4,5,0,0,Math.PI*2);ctx.fill();
 ctx.beginPath();ctx.ellipse(5+eyeOffX*0.3,-3,4,5,0,0,Math.PI*2);ctx.fill();
-// Pupils
 ctx.fillStyle='#2D2D2D';
 ctx.beginPath();ctx.arc(-5+eyeOffX,-3+eyeOffY,2.5,0,Math.PI*2);ctx.fill();
 ctx.beginPath();ctx.arc(5+eyeOffX,-3+eyeOffY,2.5,0,Math.PI*2);ctx.fill();
@@ -716,10 +824,8 @@ ctx.lineWidth=1.5;
 ctx.lineCap='round';
 ctx.beginPath();
 if(state.nearStation!==null){
-// Excited - open mouth
 ctx.arc(0,4,4,0,Math.PI);
 }else{
-// Gentle smile
 ctx.arc(0,3,5,0.2,Math.PI-0.2);
 }
 ctx.stroke();
@@ -733,7 +839,6 @@ ctx.restore();
 }
 
 function drawGrain(){
-// Subtle noise overlay
 ctx.fillStyle='rgba(245,236,215,0.03)';
 const t=Date.now();
 for(let i=0;i<80;i++){
@@ -747,11 +852,9 @@ function drawMinimap(){
 mmCtx.clearRect(0,0,160,120);
 const sx=160/WORLD_W,sy=120/WORLD_H;
 
-// Background
 mmCtx.fillStyle='rgba(196,173,138,0.6)';
 mmCtx.fillRect(0,0,160,120);
 
-// Walls
 mmCtx.fillStyle='rgba(70,100,50,0.7)';
 for(let r=0;r<ROWS;r++){
 for(let c=0;c<COLS;c++){
@@ -759,7 +862,6 @@ if(grid[r][c]===1){
 mmCtx.fillRect(c*TILE*sx,r*TILE*sy,TILE*sx+1,TILE*sy+1);
 }}}
 
-// Stations
 STATIONS.forEach((s,i)=>{
 mmCtx.fillStyle=state.discovered.has(i)?'#D4A843':'rgba(180,150,100,0.6)';
 mmCtx.beginPath();
@@ -767,8 +869,8 @@ mmCtx.arc(s.x*TILE*sx+TILE*sx/2,s.y*TILE*sy+TILE*sy/2,3,0,Math.PI*2);
 mmCtx.fill();
 });
 
-// Player
-mmCtx.fillStyle='#6B3FA0';
+// Player dot - color matches grape choice
+mmCtx.fillStyle=grapeColor==='green'?'#5BA040':'#6B3FA0';
 mmCtx.beginPath();
 mmCtx.arc(state.grapeX*sx,state.grapeY*sy,4,0,Math.PI*2);
 mmCtx.fill();
@@ -779,7 +881,6 @@ mmCtx.stroke();
 
 // ===== COLLISION =====
 function canMove(nx,ny){
-// Check grid cells that the grape would overlap
 const r1=Math.floor((ny-GRAPE_R)/TILE);
 const r2=Math.floor((ny+GRAPE_R)/TILE);
 const c1=Math.floor((nx-GRAPE_R)/TILE);
@@ -801,7 +902,6 @@ if(keys['ArrowDown']||keys['KeyS']||keys['down'])dy=1;
 if(keys['ArrowLeft']||keys['KeyA']||keys['left'])dx=-1;
 if(keys['ArrowRight']||keys['KeyD']||keys['right'])dx=1;
 
-// Normalize diagonal
 if(dx&&dy){dx*=0.707;dy*=0.707;}
 
 state.moving=dx!==0||dy!==0;
@@ -815,20 +915,16 @@ const ny=state.grapeY+dy*SPEED;
 if(canMove(nx,state.grapeY))state.grapeX=nx;
 if(canMove(state.grapeX,ny))state.grapeY=ny;
 
-// Clamp
 state.grapeX=Math.max(TILE+GRAPE_R,Math.min(WORLD_W-TILE-GRAPE_R,state.grapeX));
 state.grapeY=Math.max(TILE+GRAPE_R,Math.min(WORLD_H-TILE-GRAPE_R,state.grapeY));
 
-// Check station proximity
 state.nearStation=null;
 const prompt=document.getElementById('interact-prompt');
 STATIONS.forEach((s,i)=>{
 const scx=s.x*TILE+TILE/2;
 const scy=s.y*TILE+TILE/2;
 const dist=Math.hypot(state.grapeX-scx,state.grapeY-scy);
-if(dist<TILE*1.5){
-state.nearStation=i;
-}
+if(dist<TILE*1.5){state.nearStation=i;}
 });
 if(state.nearStation!==null){
 prompt.classList.add('visible');
@@ -851,7 +947,6 @@ state.modalOpen=true;
 state.discovered.add(idx);
 document.getElementById('progress-count').textContent=state.discovered.size;
 
-// Check completion
 if(state.discovered.size===STATIONS.length){
 setTimeout(()=>{
 document.getElementById('completion-banner').classList.remove('hidden-banner');
@@ -860,44 +955,52 @@ document.getElementById('completion-banner').classList.add('show-banner');
 }
 
 const overlay=document.getElementById('modal-overlay');
-document.getElementById('modal-station-num').textContent=`Station ${idx+1} of ${STATIONS.length}`;
+document.getElementById('modal-station-num').textContent='Station '+(idx+1)+' of '+STATIONS.length;
 document.getElementById('modal-title').textContent=s.name;
 
 let statsHTML='';
 s.stats.forEach(st=>{
-statsHTML+=`<div class="stat-card"><div class="stat-num">${st.n}</div><div class="stat-label">${st.l}</div></div>`;
+statsHTML+='<div class="stat-card"><div class="stat-num">'+st.n+'</div><div class="stat-label">'+st.l+'</div></div>';
 });
 
 let dotsHTML='';
 for(let i=1;i<=5;i++){
-dotsHTML+=`<div class="dot${i<=s.sustScore?' filled':''}"></div>`;
+dotsHTML+='<div class="dot'+(i<=s.sustScore?' filled':'')+'"></div>';
 }
 
-document.getElementById('modal-body').innerHTML=`
-<div class="modal-section">
-<h3><span class="icon">✦</span> The Good</h3>
-<p>${s.good}</p>
-</div>
-<div class="modal-section">
-<h3><span class="icon">⚡</span> The Tricky</h3>
-<p>${s.tricky}</p>
-</div>
-<div class="modal-section">
-<h3><span class="icon">📊</span> By the Numbers</h3>
-<div class="stats-grid">${statsHTML}</div>
-</div>
-<div class="modal-section">
-<h3><span class="icon">🍷</span> Flavor Impact</h3>
-<div class="flavor-quote">${s.flavor}</div>
-</div>
-<div class="modal-section">
-<h3><span class="icon">🌿</span> Sustainability Score</h3>
-<div class="sustainability">
-<div class="dots">${dotsHTML}</div>
-<span style="font-size:0.85rem;color:var(--charcoal);opacity:0.7;margin-left:4px">${s.sustScore}/5</span>
-</div>
-<p style="margin-top:6px;font-size:0.85rem">${s.sustNote}</p>
-</div>`;
+// Get bottle/packaging image for this station
+const imgSrc=getStationImageSrc(idx);
+const imageHTML=imgSrc?
+'<div class="modal-image-container">'+
+'<img src="'+imgSrc+'" alt="'+s.name+'" class="modal-bottle-img">'+
+'</div>':'';
+
+document.getElementById('modal-body').innerHTML=
+imageHTML+
+'<div class="modal-section">'+
+'<h3><span class="icon">\u2726</span> The Good</h3>'+
+'<p>'+s.good+'</p>'+
+'</div>'+
+'<div class="modal-section">'+
+'<h3><span class="icon">\u26A1</span> The Tricky</h3>'+
+'<p>'+s.tricky+'</p>'+
+'</div>'+
+'<div class="modal-section">'+
+'<h3><span class="icon">\u{1F4CA}</span> By the Numbers</h3>'+
+'<div class="stats-grid">'+statsHTML+'</div>'+
+'</div>'+
+'<div class="modal-section">'+
+'<h3><span class="icon">\u{1F377}</span> Flavor Impact</h3>'+
+'<div class="flavor-quote">'+s.flavor+'</div>'+
+'</div>'+
+'<div class="modal-section">'+
+'<h3><span class="icon">\u{1F33F}</span> Sustainability Score</h3>'+
+'<div class="sustainability">'+
+'<div class="dots">'+dotsHTML+'</div>'+
+'<span style="font-size:0.85rem;color:var(--charcoal);opacity:0.7;margin-left:4px">'+s.sustScore+'/5</span>'+
+'</div>'+
+'<p style="margin-top:6px;font-size:0.85rem">'+s.sustNote+'</p>'+
+'</div>';
 
 overlay.classList.add('active');
 document.getElementById('modal-close').focus();
@@ -953,32 +1056,43 @@ const dx=clickX-cx,dy=clickY-cy;
 const dist=Math.hypot(dx,dy);
 
 if(dist<TILE){
-// Click on grape = interact
 if(state.nearStation!==null)openModal(state.nearStation);
 return;
 }
 
-// Determine direction to move toward click
-const angle=Math.atan2(dy,dx);
-// Set temporary movement keys
 Object.keys(keys).forEach(k=>{if(['up','down','left','right'].includes(k))keys[k]=false;});
 if(Math.abs(dx)>Math.abs(dy)){
 keys[dx>0?'right':'left']=true;
 }else{
 keys[dy>0?'down':'up']=true;
 }
-// Stop after brief movement
 setTimeout(()=>{
 ['up','down','left','right'].forEach(k=>keys[k]=false);
 },200);
 });
 
+// ===== GRAPE SELECTION =====
+document.querySelectorAll('.grape-option').forEach(opt=>{
+opt.addEventListener('click',()=>{
+document.querySelectorAll('.grape-option').forEach(o=>o.classList.remove('selected'));
+opt.classList.add('selected');
+grapeColor=opt.dataset.color;
+document.getElementById('start-btn').disabled=false;
+});
+});
+
 // ===== START =====
 document.getElementById('start-btn').addEventListener('click',()=>{
+if(!grapeColor)return;
+const btn=document.getElementById('start-btn');
+btn.textContent='Loading vineyard...';
+btn.disabled=true;
+preloadImages().then(()=>{
 document.getElementById('opening').classList.add('hidden');
 document.getElementById('game-container').classList.add('active');
 resize();
 gameLoop();
+});
 });
 
 // Handle roundRect polyfill
