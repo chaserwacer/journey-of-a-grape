@@ -197,7 +197,7 @@ display:flex;align-items:center;gap:10px;white-space:nowrap}
 <!-- GAME -->
 <div id="game-container" aria-label="Vineyard maze exploration">
 <canvas id="game-canvas"></canvas>
-<div id="hud"><div id="hud-progress">Stations discovered: <span id="progress-count">0</span> / 9</div></div>
+<div id="hud"><div id="hud-progress">Stations discovered: <span id="progress-count">0</span> / 10</div></div>
 <div id="minimap"><canvas id="minimap-canvas" width="160" height="120"></canvas></div>
 <div id="interact-prompt"><kbd>E</kbd> or <kbd>Space</kbd> to explore</div>
 <div id="mobile-controls">
@@ -215,7 +215,7 @@ Wines of the World · University Project · Data sourced from industry publicati
 <div id="completion-banner" class="hidden-banner">
 <div class="completion-inner">
 <span class="completion-icon">🍇</span>
-<strong>Journey Complete!</strong> You've explored all 9 packaging methods.
+<strong>Journey Complete!</strong> You've explored all 10 packaging methods.
 </div>
 </div>
 </div>
@@ -305,7 +305,15 @@ good:"Kegged wine eliminates individual packaging waste entirely — one keg rep
 tricky:"Requires specialized equipment (keg lines, CO₂/nitrogen systems) that not every venue can install. Consumer perception still associates kegs with beer rather than quality wine. Distribution is limited, and the system works best for high-volume pours.",
 stats:[{n:"26",l:"Bottles per keg"},{n:"96%",l:"Less packaging waste"},{n:"$0",l:"Closure cost per serve"},{n:"3-4 wks",l:"Fresh after tapping"}],
 flavor:"On-tap wine arrives at your glass exactly as the winemaker intended — pristine, temperature-controlled, and lively.",
-sustScore:5,sustNote:"Reusable stainless steel kegs are the gold standard for zero-waste wine service."}
+sustScore:5,sustNote:"Reusable stainless steel kegs are the gold standard for zero-waste wine service."},
+
+{id:9,name:"Technical Cork (Diam)",x:14,y:10,
+icon:"🧪",color:"#A67B5B",
+good:"Diam closures use supercritical CO₂ extraction to purify natural cork granules, guaranteeing zero TCA contamination. They offer precisely controlled oxygen transmission rates, available in grades matched to aging windows (Diam 5, 10, 30, and Origine for 20+ years). Professional tasters report no detectable flavor impact on the wine.",
+tricky:"Multi-decade aging data (beyond 10–15 years) under Diam closures remain limited, so their performance for truly long-term cellaring is still being proven. They cost more than screw caps and basic agglomerated corks. Some traditionalists view them as lacking the prestige of single-piece natural cork.",
+stats:[{n:"0%",l:"TCA taint rate"},{n:"$0.20–$0.23",l:"Per cork (AUD)"},{n:"5-30 yrs",l:"Aging grade range"},{n:"CO₂",l:"Supercritical extraction"}],
+flavor:"Diam closures deliver sensory neutrality — the wine evolves exactly as the winemaker intended, with no cork-derived interference.",
+sustScore:4,sustNote:"Made from renewable cork granules with industrial purification; cork-based and lower waste than natural cork, but processing adds energy cost."}
 ];
 
 // ===== MAZE / WORLD =====
@@ -844,7 +852,7 @@ state.discovered.add(idx);
 document.getElementById('progress-count').textContent=state.discovered.size;
 
 // Check completion
-if(state.discovered.size===9){
+if(state.discovered.size===STATIONS.length){
 setTimeout(()=>{
 document.getElementById('completion-banner').classList.remove('hidden-banner');
 document.getElementById('completion-banner').classList.add('show-banner');
@@ -852,7 +860,7 @@ document.getElementById('completion-banner').classList.add('show-banner');
 }
 
 const overlay=document.getElementById('modal-overlay');
-document.getElementById('modal-station-num').textContent=`Station ${idx+1} of 9`;
+document.getElementById('modal-station-num').textContent=`Station ${idx+1} of ${STATIONS.length}`;
 document.getElementById('modal-title').textContent=s.name;
 
 let statsHTML='';
