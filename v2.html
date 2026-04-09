@@ -287,11 +287,19 @@ green_syn_cork:'assets/green_syn_cork_bottle.png',
 green_screw_top:'assets/green_screw_top_bottle.png',
 green_glass_seal:'assets/green_glass_seal_bottle.png',
 green_bag_in_box:'assets/green_bag_in_box.png',
+green_tetra_pak:'assets/tetra_pak_green.png',
+green_can:'assets/green_can.png',
+green_pet:'assets/pet_bottle_green.png',
+green_tech_cork:'assets/green_tech_cork.png',
 red_nat_cork:'assets/red_nat_cork_bottle.png',
 red_syn_cork:'assets/red_syn_cork_bottle.png',
 red_screw_top:'assets/red_screw_top_bottle.png',
 red_glass_seal:'assets/red_glass_seal_bottle.png',
-red_bag_in_box:'assets/red_bag_in_box.png'
+red_bag_in_box:'assets/red_bag_in_box.png',
+red_tetra_pak:'assets/tetra_pak_red.png',
+red_can:'assets/red_can.png',
+red_pet:'assets/pet_bottle_red.png',
+red_tech_cork:'assets/red_tech_cork.png'
 };
 
 function preloadImages(){
@@ -314,7 +322,11 @@ const map={
 2:prefix+'_screw_top',
 3:prefix+'_glass_seal',
 4:prefix+'_bag_in_box',
-8:'barrel'
+5:prefix+'_tetra_pak',
+6:prefix+'_can',
+7:prefix+'_pet',
+8:'barrel',
+9:prefix+'_tech_cork'
 };
 return map[stationId]||null;
 }
@@ -327,7 +339,11 @@ const map={
 2:'assets/'+prefix+'_screw_top_bottle.png',
 3:'assets/'+prefix+'_glass_seal_bottle.png',
 4:'assets/'+prefix+'_bag_in_box.png',
-8:'assets/barrel.png'
+5:'assets/tetra_pak_'+prefix+'.png',
+6:'assets/'+prefix+'_can.png',
+7:'assets/pet_bottle_'+prefix+'.png',
+8:'assets/barrel.png',
+9:'assets/'+prefix+'_tech_cork.png'
 };
 return map[stationId]||null;
 }
