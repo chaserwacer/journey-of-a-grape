@@ -354,7 +354,7 @@ const STATIONS = [
 icon:"\u{1F333}",color:"#8B6B4A",
 good:"Natural cork has sealed wine bottles for over 250 years, creating a proven, time-tested closure. Its cellular structure allows micro-amounts of oxygen to enter \u2014 with variable oxygen transmission rates of 0.5 to 10 \u03BCg O\u2082/day \u2014 helping wines develop complex flavors during aging. Cork is harvested from living cork oak trees every nine years without harming them, making it a renewable resource.",
 tricky:"About 1\u20133% of bottles sealed with natural cork suffer from \u2018cork taint\u2019 (TCA), which can mute flavors or produce a musty smell. Quality varies between corks, and premium corks come at a higher cost. They also require bottles to be stored on their sides to keep the cork moist.",
-stats:[{n:"250+",l:"Years in use"},{n:"~2-3%",l:"TCA failure rate"},{n:"$0.30\u2013$1.00",l:"Per cork (AUD)"},{n:"9 yrs",l:"Bark harvest cycle"}],
+stats:[{n:"250+",l:"Years in use"},{n:"~1-3%",l:"TCA failure rate"},{n:"$0.30\u2013$1.00",l:"Per cork (AUD)"},{n:"9 yrs",l:"Bark harvest cycle"}],
 flavor:"Natural cork\u2019s slow oxygen exchange lets tannic reds soften and develop layered complexity over decades.",
 sustScore:4,sustNote:"Fully biodegradable, harvested from living cork oak trees (150\u2013200 yr lifespan) that support rich Mediterranean ecosystems and act as carbon sinks."},
 
@@ -370,7 +370,7 @@ sustScore:2,sustNote:"Petroleum-derived plastics with limited recyclability; som
 icon:"\u{1F529}",color:"#B0B0B0",
 good:"Screw caps provide an airtight, perfectly consistent seal that virtually eliminates oxidation and cork taint. They\u2019re the easiest closure to open \u2014 no corkscrew needed. Australia and New Zealand have proven they work beautifully even for premium wines.",
 tricky:"Many consumers still associate screw caps with cheap wine, creating a perception barrier for premium bottles. The aluminum requires mining and significant energy to produce. Some winemakers argue that zero oxygen transfer prevents beneficial aging evolution.",
-stats:[{n:"<0.5%",l:"Failure rate"},{n:"~$0.15",l:"Per cap (AUD)"},{n:"90%+",l:"AU wines use them"},{n:"2001",l:"Major adoption year"}],
+stats:[{n:"0%",l:"TCA taint risk"},{n:"~$0.15",l:"Per cap (AUD)"},{n:"90%+",l:"AU wines use them"},{n:"2001",l:"Major adoption year"}],
 flavor:"Screw caps lock in bright, primary fruit characteristics \u2014 your Sauvignon Blanc stays crisp and zingy as intended.",
 sustScore:3,sustNote:"Aluminum is infinitely recyclable, but the liner is often non-recyclable. Mining has environmental costs."},
 
@@ -378,23 +378,23 @@ sustScore:3,sustNote:"Aluminum is infinitely recyclable, but the liner is often 
 icon:"\u{1F48E}",color:"#A8D8EA",
 good:"Vino-Lok uses a glass stopper with an inert O-ring, creating a chemically neutral, elegant seal. It offers zero risk of cork taint and provides a beautiful, premium presentation. The closure is reusable and gives a satisfying \u2018pop\u2019 when opened.",
 tricky:"Glass stoppers cost significantly more than other closures, typically reserved for premium wines. They require a special bottle-mouth design, limiting producer flexibility. Despite their elegance, many markets are unfamiliar with this closure type.",
-stats:[{n:"$0.50\u2013$1.00",l:"Per seal cost"},{n:"0%",l:"Taint risk"},{n:"2003",l:"Introduced by Alcoa"},{n:"100%",l:"Reusable closure"}],
+stats:[{n:"$0.70+",l:"Per seal cost"},{n:"0%",l:"Taint risk"},{n:"2003",l:"Introduced by Alcoa"},{n:"100%",l:"Reusable closure"}],
 flavor:"The inert glass seal preserves delicate aromatic whites with crystalline purity \u2014 every nuance stays intact.",
 sustScore:3,sustNote:"Glass is endlessly recyclable, chemically inert, and reusable; however, production is energy-intensive and requires proprietary bottle-mouth finishes."},
 
 {id:4,name:"Bag-in-Box",x:24,y:16,
 icon:"\u{1F4E6}",color:"#C4956A",
 good:"Bag-in-Box packaging keeps wine fresh for 4\u20136 weeks after opening, thanks to its collapsible bladder that prevents air contact. It\u2019s dramatically lighter than glass, with carbon footprints 35\u201384% lower than glass bottles and requiring six times fewer vehicles for transport. The format is perfect for everyday wines and entertaining.",
-tricky:"The plastic bladder and cardboard box create mixed-material recycling challenges. Wine stored in bag-in-box has a shorter overall shelf life (about 8\u201312 months). The format still carries a stigma of low quality in many wine cultures despite improving offerings.",
+tricky:"The plastic bladder and cardboard box create mixed-material recycling challenges. Wine stored in bag-in-box has a shorter overall shelf life (about 6\u201312 months). The format still carries a stigma of low quality in many wine cultures despite improving offerings.",
 stats:[{n:"35-84%",l:"Less CO\u2082 vs glass"},{n:"4-6 wks",l:"Fresh after opening"},{n:"3L/5L",l:"Common sizes"},{n:"1950s",l:"Invented (Scholle)"}],
 flavor:"Bag-in-Box excels at keeping everyday wines \u2014 fruity reds, crisp whites \u2014 tasting fresh glass after glass.",
 sustScore:5,sustNote:"Lowest carbon footprint of any wine packaging format; mixed materials (plastic bag, aluminum foil, cardboard) can complicate end-of-life recycling."},
 
 {id:5,name:"Tetra Pak / Carton",x:4,y:18,
 icon:"\u{1F9C3}",color:"#7DB87D",
-good:"Tetra Pak cartons are incredibly lightweight, stackable, and use roughly 1/3 the carbon footprint of glass bottles in transport. They\u2019re shatterproof and convenient for outdoor events, picnics, and travel. Modern carton wines have seen a quality revolution in recent years.",
+good:"Tetra Pak cartons are incredibly lightweight, stackable, and have up to 80% lower carbon footprint than glass bottles. They\u2019re shatterproof and convenient for outdoor events, picnics, and travel. Modern carton wines have seen a quality revolution in recent years.",
 tricky:"Cartons are made of layered paper, plastic, and aluminum \u2014 making them difficult to recycle in most areas. They aren\u2019t suitable for wines meant for aging. The format struggles against perception bias, as many consumers equate cartons with juice boxes.",
-stats:[{n:"68%",l:"Lighter than glass"},{n:"1/3",l:"Carbon vs. bottle"},{n:"~12 mo",l:"Optimal shelf life"},{n:"500mL-1L",l:"Common sizes"}],
+stats:[{n:"~90%",l:"Lighter than glass"},{n:"~80%",l:"Less CO\u2082 vs glass"},{n:"~12 mo",l:"Optimal shelf life"},{n:"500mL-1L",l:"Common sizes"}],
 flavor:"Carton wines showcase vibrant, drink-now styles \u2014 perfect for that fresh ros\u00E9 at a summer picnic.",
 sustScore:3,sustNote:"Excellent transport efficiency; recycling infrastructure for layered cartons is limited but growing."},
 
@@ -408,9 +408,9 @@ sustScore:4,sustNote:"Aluminum has the best real-world recycling loop of any pac
 
 {id:7,name:"PET Plastic Bottle",x:30,y:13,
 icon:"\u{1F9F4}",color:"#F0C987",
-good:"PET bottles weigh about 1/6th of glass, dramatically cutting shipping weight and fuel costs. They\u2019re shatterproof, making them ideal for poolside, outdoor venues, and airlines. The material is widely recyclable in most municipal programs worldwide.",
+good:"PET bottles weigh about a tenth of glass, dramatically cutting shipping weight and fuel costs. They\u2019re shatterproof, making them ideal for poolside, outdoor venues, and airlines. The material is widely recyclable in most municipal programs worldwide.",
 tricky:"PET is slightly permeable to oxygen, limiting shelf life to 12\u201318 months maximum. Plastic perception is a growing issue as consumers become more eco-conscious. Heat and UV light can degrade both the container and the wine inside.",
-stats:[{n:"83%",l:"Lighter than glass"},{n:"12-18 mo",l:"Shelf life"},{n:"#1 PETE",l:"Recycle code"},{n:"1 billion+",l:"Bottles used/yr for wine"}],
+stats:[{n:"~90%",l:"Lighter than glass"},{n:"12-18 mo",l:"Shelf life"},{n:"#1 PETE",l:"Recycle code"},{n:"~54g",l:"Bottle weight"}],
 flavor:"PET works well for light, easy-drinking wines \u2014 simple whites and ros\u00E9s meant to be enjoyed promptly.",
 sustScore:2,sustNote:"Widely recyclable but derived from petroleum; contributes to microplastic pollution when not properly recycled."},
 
@@ -418,7 +418,7 @@ sustScore:2,sustNote:"Widely recyclable but derived from petroleum; contributes 
 icon:"\u{1F37A}",color:"#B8860B",
 good:"Kegged wine eliminates individual packaging waste entirely \u2014 one keg replaces approximately 26 bottles. The closed stainless-steel system preserves wine under inert gas, keeping it fresh for weeks. It reduces restaurant storage needs and speeds up service dramatically.",
 tricky:"Requires specialized equipment (keg lines, CO\u2082/nitrogen systems) that not every venue can install. Consumer perception still associates kegs with beer rather than quality wine. Distribution is limited, and the system works best for high-volume pours.",
-stats:[{n:"26",l:"Bottles per keg"},{n:"96%",l:"Less packaging waste"},{n:"$0",l:"Closure cost per serve"},{n:"3-4 wks",l:"Fresh after tapping"}],
+stats:[{n:"26",l:"Bottles per keg"},{n:"96%",l:"Less packaging waste"},{n:"$0",l:"Closure cost per serve"},{n:"4-6 wks",l:"Fresh after tapping"}],
 flavor:"On-tap wine arrives at your glass exactly as the winemaker intended \u2014 pristine, temperature-controlled, and lively.",
 sustScore:5,sustNote:"Reusable stainless steel kegs are the gold standard for zero-waste wine service."},
 
